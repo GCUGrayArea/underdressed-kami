@@ -251,16 +251,20 @@ Implement the availability engine that calculates open time slots for contractor
 **Notes:**
 Travel time buffer will be deferred to PR-008 (Distance calculation integration). This PR focuses on pure time-based availability. All times assumed in consistent time zone (business local time).
 ### PR-007: Unit Tests for Availability Engine
-**Status:** New
-**Dependencies:** PR-006
+**Status:** Planning
+**Agent:** [Planning Agent]
+**Dependencies:** PR-006 ✅
 **Priority:** High
 
 **Description:**
-Comprehensive unit tests for availability engine covering various scenarios: normal availability, no availability, edge cases, boundary conditions.
+Comprehensive unit tests for availability engine covering various scenarios: normal availability, no availability, edge cases, boundary conditions. Tests validate the AvailabilityService domain logic, TimeSlot value object behavior, and edge case handling.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.Tests/Domain/Services/AvailabilityServiceTests.cs (create) - Test suite
-- src/backend/SmartScheduler.Tests/SmartScheduler.Tests.csproj (create) - Test project
+**Files (Refined during Planning):**
+- src/backend/SmartScheduler.Tests/SmartScheduler.Tests.csproj (create) - xUnit test project with FluentAssertions, Moq, Coverlet
+- src/backend/SmartScheduler.Tests/Domain/Services/AvailabilityServiceTests.cs (create) - Comprehensive test suite for AvailabilityService
+- src/backend/SmartScheduler.Tests/Domain/ValueObjects/TimeSlotTests.cs (create) - Test suite for TimeSlot value object
+- src/backend/SmartScheduler.Tests/TestHelpers/TestDataBuilder.cs (create) - Builder pattern for test data (WeeklySchedule, Job entities)
+- src/backend/SmartScheduler.sln (modify) - Add test project to solution
 
 **Acceptance Criteria:**
 - [ ] Test: Contractor with no existing jobs shows full working hours as available
@@ -657,26 +661,24 @@ Use React Router v6 with lazy loading for code splitting. Set up Material-UI wit
 
 ### PR-018: API Client and React Query Setup
 **Status:** Planning
-**Dependencies:** PR-017
+**Agent:** [Planning Agent]
+**Dependencies:** PR-017 ✅
 **Priority:** High
 
 **Description:**
-Set up Axios HTTP client with interceptors and React Query for server state management. Configure base URL, error handling, and query defaults.
+Set up Axios HTTP client with interceptors and React Query (TanStack Query) for server state management. Configure base URL from environment, correlation ID tracking, global error handling, and query defaults. Define TypeScript types matching backend DTOs for type-safe API calls.
 
 **Files (Refined during Planning):**
-- src/frontend/src/main.tsx (modify) - Wrap App with Router and ThemeProvider
-- src/frontend/src/App.tsx (modify) - Replace with RouterProvider
-- src/frontend/index.html (verify) - Update title and meta
-- src/frontend/src/theme.ts (create) - MUI theme configuration
-- src/frontend/src/router.tsx (create) - Route definitions with lazy loading
-- src/frontend/src/layouts/MainLayout.tsx (create) - Main layout with nav
-- src/frontend/src/components/Navigation.tsx (create) - Navigation links
-- src/frontend/src/components/LoadingFallback.tsx (create) - Loading spinner
-- src/frontend/src/pages/Dashboard.tsx (create) - Dashboard placeholder
-- src/frontend/src/pages/Contractors.tsx (create) - Contractors placeholder
-- src/frontend/src/pages/Jobs.tsx (create) - Jobs placeholder
-- src/frontend/src/pages/NotFound.tsx (create) - 404 page
-- src/frontend/src/types/index.ts (create) - Common TypeScript types
+- src/frontend/.env.example (create) - Environment variable template with VITE_API_BASE_URL
+- src/frontend/src/main.tsx (modify) - Wrap App with QueryClientProvider
+- src/frontend/src/lib/queryClient.ts (create) - React Query client configuration with defaults
+- src/frontend/src/lib/axios.ts (create) - Axios instance with base URL, interceptors, correlation ID
+- src/frontend/src/services/api.ts (create) - Base API service class with error handling
+- src/frontend/src/types/api.ts (create) - API request/response TypeScript interfaces
+- src/frontend/src/types/dto.ts (create) - Backend DTO types (ContractorDto, JobDto, etc.)
+- src/frontend/src/hooks/useApiError.ts (create) - Custom hook for API error handling
+- src/frontend/src/utils/correlation.ts (create) - Correlation ID generation utility
+- src/frontend/package.json (modify) - Already has @tanstack/react-query and axios
 
 **Acceptance Criteria:**
 - [ ] Axios client configured with backend base URL from environment
@@ -692,17 +694,23 @@ Use React Query for automatic caching, background refetching, and optimistic upd
 ---
 
 ### PR-019: SignalR Client Integration
-**Status:** New
-**Dependencies:** PR-017
+**Status:** Planning
+**Agent:** [Planning Agent]
+**Dependencies:** PR-017 ✅
 **Priority:** High
 
 **Description:**
-Integrate SignalR JavaScript client for real-time updates from backend. Set up connection management, event handlers, and React context for SignalR state.
+Integrate SignalR JavaScript client (@microsoft/signalr) for real-time updates from backend. Implement connection management with automatic reconnection, event subscription API, and React context for sharing connection state across components. Support strongly-typed server messages.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/frontend/src/services/signalr.ts (create) - SignalR connection service
-- src/frontend/src/contexts/SignalRContext.tsx (create) - SignalR context provider
-- src/frontend/src/hooks/useSignalR.ts (create) - Hook for accessing SignalR
+**Files (Refined during Planning):**
+- src/frontend/src/services/signalr/connection.ts (create) - SignalR connection factory and configuration
+- src/frontend/src/services/signalr/events.ts (create) - TypeScript interfaces for server events (JobAssigned, ScheduleUpdated)
+- src/frontend/src/contexts/SignalRContext.tsx (create) - React context provider for SignalR connection
+- src/frontend/src/hooks/useSignalR.ts (create) - Hook for accessing SignalR connection and state
+- src/frontend/src/hooks/useSignalREvent.ts (create) - Hook for subscribing to specific events
+- src/frontend/src/utils/signalr-logger.ts (create) - Custom logger for SignalR debugging
+- src/frontend/.env.example (modify) - Add VITE_SIGNALR_HUB_URL variable
+- src/frontend/src/main.tsx (modify) - Wrap App with SignalRProvider
 
 **Acceptance Criteria:**
 - [ ] SignalR connection established to /hubs/scheduling on app load
