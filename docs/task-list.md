@@ -155,7 +155,7 @@ Using feature folder structure (Queries/Contractors/, DTOs/Contractors/). Manual
 ---
 
 ### PR-005: Implement Job Management Commands and Queries
-**Status:** In Progress
+**Status:** Complete
 **Agent:** Blonde
 **Dependencies:** PR-001, PR-002
 **Priority:** High
@@ -446,31 +446,46 @@ Use [ApiController] attribute for automatic model validation. Return problem det
 ---
 
 ### PR-013: Job Management API Endpoints
-**Status:** New
+**Status:** Planning
+**Agent:** [Planning Agent]
 **Dependencies:** PR-005
 **Priority:** High
 
 **Description:**
 Implement REST API endpoints for job management: POST /api/jobs, GET /api/jobs, GET /api/jobs/{id}, PUT /api/jobs/{id}, POST /api/jobs/{id}/assign.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.WebApi/Controllers/JobsController.cs (create) - REST controller
-- src/backend/SmartScheduler.WebApi/Models/CreateJobRequest.cs (create) - Request model
-- src/backend/SmartScheduler.WebApi/Models/UpdateJobRequest.cs (create) - Request model
-- src/backend/SmartScheduler.WebApi/Models/AssignContractorRequest.cs (create) - Request model
-- src/backend/SmartScheduler.WebApi/Models/JobResponse.cs (create) - Response model
+**Files (Refined during Planning):**
+- src/backend/SmartScheduler.WebApi/Controllers/JobsController.cs (create) - REST controller with all job endpoints
+- src/backend/SmartScheduler.WebApi/Models/Requests/CreateJobRequest.cs (create) - Request model for job creation
+- src/backend/SmartScheduler.WebApi/Models/Requests/UpdateJobRequest.cs (create) - Request model for job updates
+- src/backend/SmartScheduler.WebApi/Models/Requests/AssignContractorRequest.cs (create) - Request model for contractor assignment
+- src/backend/SmartScheduler.WebApi/Models/Responses/JobResponse.cs (create) - Response model for job data
+- src/backend/SmartScheduler.WebApi/Program.cs (modify) - Register MediatR, repositories, and controllers
+
+**Implementation Approach:**
+- Thin controllers delegating all business logic to MediatR commands/queries
+- Request models separate from commands for clean API contract
+- Response models map from DTOs
+- Standard REST conventions with appropriate HTTP status codes
+- GET /api/jobs supports optional status query parameter for filtering
+- POST /api/jobs/{id}/assign uses existing AssignContractorCommand (triggers JobAssignedEvent)
+- Availability validation deferred to PR-006 integration (not in current scope)
 
 **Acceptance Criteria:**
-- [ ] POST /api/jobs creates job and returns 201 Created
-- [ ] GET /api/jobs returns jobs filtered by status
-- [ ] GET /api/jobs/{id} returns job with contractor details if assigned
-- [ ] PUT /api/jobs/{id} updates job details
-- [ ] POST /api/jobs/{id}/assign assigns contractor to job
-- [ ] Assignment validates contractor availability before accepting
+- [ ] POST /api/jobs creates job and returns 201 Created with Location header
+- [ ] GET /api/jobs returns jobs filtered by optional status query parameter
+- [ ] GET /api/jobs/{id} returns job with contractor details if assigned or 404
+- [ ] PUT /api/jobs/{id} updates job details and returns 200 OK or 404
+- [ ] POST /api/jobs/{id}/assign assigns contractor to job and returns 200 OK or 404/400
+- [ ] Assignment validates contractor existence and job type match (existing handler)
 - [ ] All endpoints return appropriate HTTP status codes
+- [ ] Controller follows thin controller pattern (no business logic)
+- [ ] Domain events trigger for SignalR (already in command handlers)
 
 **Notes:**
-Job assignment endpoint should trigger domain events for SignalR broadcasting (implemented in later PR).
+- Availability validation mentioned in original acceptance criteria will be enhanced when PR-006 (Availability Engine) is integrated
+- Current assignment validation follows existing AssignContractorCommandHandler pattern (validates contractor exists and job type matches)
+- No file conflicts with any In Progress or Suspended PRs - PR-013 only touches WebApi layer
 
 ---
 
@@ -603,24 +618,27 @@ Keep hub thin - just broadcasting, no business logic. Event handlers convert dom
 ## Block 8: Frontend Foundation (Depends on: Block 1)
 
 ### PR-017: React Application Structure and Routing
-**Status:** New
+**Status:** Planning
 **Dependencies:** PR-001
 **Priority:** High
 
 **Description:**
 Set up React application structure with routing, layout components, navigation, and Material-UI theme configuration.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/frontend/src/main.tsx (create) - Application entry point
-- src/frontend/src/App.tsx (create) - Root component
-- src/frontend/src/router.tsx (create) - React Router configuration
-- src/frontend/src/theme.ts (create) - Material-UI theme
+**Files (Refined during Planning):**
+- src/frontend/src/main.tsx (modify) - Wrap App with Router and ThemeProvider
+- src/frontend/src/App.tsx (modify) - Replace with RouterProvider
+- src/frontend/index.html (verify) - Update title and meta
+- src/frontend/src/theme.ts (create) - MUI theme configuration
+- src/frontend/src/router.tsx (create) - Route definitions with lazy loading
 - src/frontend/src/layouts/MainLayout.tsx (create) - Main layout with nav
+- src/frontend/src/components/Navigation.tsx (create) - Navigation links
+- src/frontend/src/components/LoadingFallback.tsx (create) - Loading spinner
 - src/frontend/src/pages/Dashboard.tsx (create) - Dashboard placeholder
-- src/frontend/src/pages/Contractors.tsx (create) - Contractors list placeholder
-- src/frontend/src/components/Navigation.tsx (create) - Navigation component
-- src/frontend/index.html (create) - HTML template
-
+- src/frontend/src/pages/Contractors.tsx (create) - Contractors placeholder
+- src/frontend/src/pages/Jobs.tsx (create) - Jobs placeholder
+- src/frontend/src/pages/NotFound.tsx (create) - 404 page
+- src/frontend/src/types/index.ts (create) - Common TypeScript types
 **Acceptance Criteria:**
 - [ ] React app renders in browser at localhost:5173
 - [ ] Routing configured with routes for dashboard, contractors, jobs
