@@ -41,7 +41,8 @@ This is the foundation for all subsequent work. Ensure proper layer references (
 ---
 
 ### PR-002: Database Schema and EF Core Configuration
-**Status:** New
+**Status:** Planning
+**Agent:** Orange
 **Dependencies:** PR-001
 **Priority:** High
 
