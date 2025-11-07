@@ -200,7 +200,8 @@ AssignContractorCommand will be enhanced in later PRs to check availability. For
 
 
 ### PR-006: Implement Availability Engine Core Logic
-**Status:** Planning
+**Status:** In Progress
+**Agent:** Blue
 **Dependencies:** PR-003 ✅, PR-004 ✅, PR-005 ✅
 **Priority:** High
 
