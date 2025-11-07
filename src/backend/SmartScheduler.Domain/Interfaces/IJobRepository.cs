@@ -15,6 +15,7 @@ public interface IJobRepository
     Task<IEnumerable<Job>> GetByContractorAsync(Guid contractorId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Job>> GetByJobTypeAsync(Guid jobTypeId, CancellationToken cancellationToken = default);
     Task<int> GetNextSequenceNumberAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Job>> GetByContractorAndDateAsync(Guid contractorId, DateTime date, CancellationToken cancellationToken = default);
     Task AddAsync(Job job, CancellationToken cancellationToken = default);
     Task UpdateAsync(Job job, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);

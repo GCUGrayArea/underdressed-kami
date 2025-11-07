@@ -1,11 +1,22 @@
 using Microsoft.EntityFrameworkCore;
+using SmartScheduler.Domain.Interfaces;
+using SmartScheduler.Domain.Services;
 using SmartScheduler.Infrastructure.Persistence;
+using SmartScheduler.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add database context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register repositories
+builder.Services.AddScoped<IContractorRepository, ContractorRepository>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
+builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
+
+// Register domain services
+builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -95,6 +95,21 @@ public class JobRepository : IJobRepository
         return 1;
     }
 
+    public async Task<IEnumerable<Job>> GetByContractorAndDateAsync(
+        Guid contractorId,
+        DateTime date,
+        CancellationToken cancellationToken = default)
+    {
+        var targetDate = date.Date;
+
+        return await _context.Jobs
+            .Where(j => j.AssignedContractorId == contractorId)
+            .Where(j => j.ScheduledStartTime.HasValue)
+            .Where(j => j.ScheduledStartTime!.Value.Date == targetDate)
+            .OrderBy(j => j.ScheduledStartTime)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task AddAsync(
         Job job,
         CancellationToken cancellationToken = default)
