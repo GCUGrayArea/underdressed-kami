@@ -85,14 +85,15 @@ Keep domain entities rich with behavior, not anemic. Value objects should valida
 ## Block 2: Core Domain Logic (Depends on: Block 1)
 
 ### PR-003: Implement Contractor Management Commands
-**Status:** New
+**Status:** Planning
+**Agent:** White
 **Dependencies:** PR-001, PR-002
 **Priority:** High
 
 **Description:**
-Implement CQRS commands for contractor CRUD operations: CreateContractorCommand, UpdateContractorCommand, DeactivateContractorCommand. Include command handlers, FluentValidation validators, and repository interfaces.
+Implement CQRS commands for contractor CRUD operations: CreateContractorCommand, UpdateContractorCommand, DeactivateContractorCommand. Include command handlers, FluentValidation validators, and COMPLETE repository implementation with ALL CRUD methods.
 
-**Files (ESTIMATED - will be refined during Planning):**
+**Files (PLANNING IN PROGRESS - White):**
 - src/backend/SmartScheduler.Application/Commands/CreateContractorCommand.cs (create) - Create command
 - src/backend/SmartScheduler.Application/Commands/UpdateContractorCommand.cs (create) - Update command
 - src/backend/SmartScheduler.Application/Commands/DeactivateContractorCommand.cs (create) - Deactivate command
@@ -102,7 +103,7 @@ Implement CQRS commands for contractor CRUD operations: CreateContractorCommand,
 - src/backend/SmartScheduler.Application/Validators/CreateContractorCommandValidator.cs (create) - Validator
 - src/backend/SmartScheduler.Application/Validators/UpdateContractorCommandValidator.cs (create) - Validator
 - src/backend/SmartScheduler.Domain/Interfaces/IContractorRepository.cs (create) - Repository interface
-- src/backend/SmartScheduler.Infrastructure/Persistence/Repositories/ContractorRepository.cs (create) - Repository implementation
+- src/backend/SmartScheduler.Infrastructure/Persistence/Repositories/ContractorRepository.cs (create) - COMPLETE Repository implementation with ALL CRUD methods
 
 **Acceptance Criteria:**
 - [ ] Commands validate inputs using FluentValidation (name length, rating range, etc.)
