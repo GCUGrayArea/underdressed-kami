@@ -85,7 +85,7 @@ Keep domain entities rich with behavior, not anemic. Value objects should valida
 ## Block 2: Core Domain Logic (Depends on: Block 1)
 
 ### PR-003: Implement Contractor Management Commands
-**Status:** Planning
+**Status:** In Progress
 **Agent:** White
 **Dependencies:** PR-001, PR-002
 **Priority:** High
