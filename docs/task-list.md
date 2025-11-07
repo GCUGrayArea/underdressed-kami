@@ -148,14 +148,18 @@ Queries can run in parallel with PR-003 as they don't conflict. Consider using A
 ---
 
 ### PR-005: Implement Job Management Commands and Queries
-**Status:** New
+**Status:** Planning
+**Agent:** Blonde
 **Dependencies:** PR-001, PR-002
 **Priority:** High
 
 **Description:**
 Implement CQRS commands and queries for job management: CreateJobCommand, UpdateJobCommand, AssignContractorCommand, and corresponding queries for job retrieval and listing.
 
-**Files (ESTIMATED - will be refined during Planning):**
+**Files (Refined during Planning by Blonde):**
+- src/backend/SmartScheduler.Domain/Events/DomainEvent.cs (create) - Base domain event class
+- src/backend/SmartScheduler.Domain/Events/JobCreatedEvent.cs (create) - Job created domain event
+- src/backend/SmartScheduler.Domain/Events/JobAssignedEvent.cs (create) - Job assigned domain event
 - src/backend/SmartScheduler.Application/Commands/CreateJobCommand.cs (create) - Create command
 - src/backend/SmartScheduler.Application/Commands/UpdateJobCommand.cs (create) - Update command
 - src/backend/SmartScheduler.Application/Commands/AssignContractorCommand.cs (create) - Assign command
@@ -163,14 +167,14 @@ Implement CQRS commands and queries for job management: CreateJobCommand, Update
 - src/backend/SmartScheduler.Application/CommandHandlers/UpdateJobCommandHandler.cs (create) - Handler
 - src/backend/SmartScheduler.Application/CommandHandlers/AssignContractorCommandHandler.cs (create) - Handler
 - src/backend/SmartScheduler.Application/Validators/CreateJobCommandValidator.cs (create) - Validator
+- src/backend/SmartScheduler.Application/Validators/UpdateJobCommandValidator.cs (create) - Validator
 - src/backend/SmartScheduler.Application/Validators/AssignContractorCommandValidator.cs (create) - Validator
 - src/backend/SmartScheduler.Application/Queries/GetJobByIdQuery.cs (create) - Get by ID query
 - src/backend/SmartScheduler.Application/Queries/GetJobsByStatusQuery.cs (create) - Filter query
 - src/backend/SmartScheduler.Application/QueryHandlers/GetJobByIdQueryHandler.cs (create) - Handler
 - src/backend/SmartScheduler.Application/QueryHandlers/GetJobsByStatusQueryHandler.cs (create) - Handler
 - src/backend/SmartScheduler.Application/DTOs/JobDto.cs (create) - Job DTO
-- src/backend/SmartScheduler.Domain/Interfaces/IJobRepository.cs (create) - Repository interface
-- src/backend/SmartScheduler.Infrastructure/Persistence/Repositories/JobRepository.cs (create) - Repository implementation
+- src/backend/SmartScheduler.Infrastructure/Persistence/Repositories/JobRepository.cs (create) - Repository implementation (IJobRepository already exists)
 
 **Acceptance Criteria:**
 - [ ] CreateJobCommand validates job type matches predefined types
