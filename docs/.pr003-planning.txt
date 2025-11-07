@@ -1,0 +1,44 @@
+PR-003 Planning - White
+
+Files to Create (14 total):
+
+Domain Events (3 files):
+1. src/backend/SmartScheduler.Domain/Events/ContractorCreatedEvent.cs
+2. src/backend/SmartScheduler.Domain/Events/ContractorUpdatedEvent.cs
+3. src/backend/SmartScheduler.Domain/Events/ContractorDeactivatedEvent.cs
+
+Application Common (1 file):
+4. src/backend/SmartScheduler.Application/Common/Result.cs
+
+Application DTOs (1 file):
+5. src/backend/SmartScheduler.Application/DTOs/LocationDto.cs
+
+Application Commands (3 files):
+6. src/backend/SmartScheduler.Application/Commands/CreateContractorCommand.cs
+7. src/backend/SmartScheduler.Application/Commands/UpdateContractorCommand.cs
+8. src/backend/SmartScheduler.Application/Commands/DeactivateContractorCommand.cs
+
+Application Command Handlers (3 files):
+9. src/backend/SmartScheduler.Application/CommandHandlers/CreateContractorCommandHandler.cs
+10. src/backend/SmartScheduler.Application/CommandHandlers/UpdateContractorCommandHandler.cs
+11. src/backend/SmartScheduler.Application/CommandHandlers/DeactivateContractorCommandHandler.cs
+
+Application Validators (2 files):
+12. src/backend/SmartScheduler.Application/Validators/CreateContractorCommandValidator.cs
+13. src/backend/SmartScheduler.Application/Validators/UpdateContractorCommandValidator.cs
+
+Infrastructure Repository (1 file):
+14. src/backend/SmartScheduler.Infrastructure/Persistence/Repositories/ContractorRepository.cs
+    - COMPLETE implementation with ALL CRUD methods:
+      * GetByIdAsync
+      * GetByFormattedIdAsync
+      * GetAllAsync
+      * GetByJobTypeAsync
+      * GetActiveContractorsAsync
+      * GetNextSequenceNumberAsync
+      * AddAsync
+      * UpdateAsync
+      * ExistsAsync
+
+No file conflicts detected with In Progress or Suspended PRs.
+Ready to proceed to In Progress.
