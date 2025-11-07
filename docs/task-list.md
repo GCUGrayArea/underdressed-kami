@@ -374,18 +374,20 @@ Use theory tests (xUnit [Theory]) to test multiple scoring scenarios efficiently
 ## Block 6: REST API Endpoints (Depends on: Block 5)
 
 ### PR-012: Contractor Management API Endpoints
-**Status:** New
+**Status:** Planning
 **Dependencies:** PR-003, PR-004
 **Priority:** High
 
 **Description:**
 Implement REST API endpoints for contractor management: POST /api/contractors, GET /api/contractors, GET /api/contractors/{id}, PUT /api/contractors/{id}, DELETE /api/contractors/{id}.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.WebApi/Controllers/ContractorsController.cs (create) - REST controller
-- src/backend/SmartScheduler.WebApi/Models/CreateContractorRequest.cs (create) - Request model
-- src/backend/SmartScheduler.WebApi/Models/UpdateContractorRequest.cs (create) - Request model
-- src/backend/SmartScheduler.WebApi/Models/ContractorResponse.cs (create) - Response model
+**Files (Refined during Planning):**
+- src/backend/SmartScheduler.WebApi/Controllers/ContractorsController.cs (create) - REST API controller with all CRUD endpoints
+- src/backend/SmartScheduler.WebApi/Models/Requests/CreateContractorRequest.cs (create) - POST request model
+- src/backend/SmartScheduler.WebApi/Models/Requests/UpdateContractorRequest.cs (create) - PUT request model
+- src/backend/SmartScheduler.WebApi/Models/Requests/AddWeeklyScheduleRequest.cs (create) - Nested schedule model for requests
+- src/backend/SmartScheduler.WebApi/Models/Responses/ContractorResponse.cs (create) - Response wrapper for contractor data
+- src/backend/SmartScheduler.WebApi/Program.cs (modify) - Register MediatR, FluentValidation, repositories, CORS, Problem Details
 
 **Acceptance Criteria:**
 - [ ] POST /api/contractors creates contractor and returns 201 Created
