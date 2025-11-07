@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartScheduler.Domain", "SmartScheduler.Domain\SmartScheduler.Domain.csproj", "{C367C676-5DD1-4BA1-87CE-8A350EFF883F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartScheduler.Application", "SmartScheduler.Application\SmartScheduler.Application.csproj", "{4638542F-9928-438F-AFA0-B827F2EF0855}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartScheduler.Infrastructure", "SmartScheduler.Infrastructure\SmartScheduler.Infrastructure.csproj", "{1605DA1E-DA82-4CC8-8971-F178CCF9A458}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartScheduler.WebApi", "SmartScheduler.WebApi\SmartScheduler.WebApi.csproj", "{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C367C676-5DD1-4BA1-87CE-8A350EFF883F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C367C676-5DD1-4BA1-87CE-8A350EFF883F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C367C676-5DD1-4BA1-87CE-8A350EFF883F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C367C676-5DD1-4BA1-87CE-8A350EFF883F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4638542F-9928-438F-AFA0-B827F2EF0855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4638542F-9928-438F-AFA0-B827F2EF0855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4638542F-9928-438F-AFA0-B827F2EF0855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4638542F-9928-438F-AFA0-B827F2EF0855}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1605DA1E-DA82-4CC8-8971-F178CCF9A458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1605DA1E-DA82-4CC8-8971-F178CCF9A458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1605DA1E-DA82-4CC8-8971-F178CCF9A458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1605DA1E-DA82-4CC8-8971-F178CCF9A458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
