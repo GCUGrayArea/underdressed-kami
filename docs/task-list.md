@@ -148,7 +148,7 @@ Queries can run in parallel with PR-003 as they don't conflict. Consider using A
 ---
 
 ### PR-005: Implement Job Management Commands and Queries
-**Status:** Planning
+**Status:** In Progress
 **Agent:** Blonde
 **Dependencies:** PR-001, PR-002
 **Priority:** High
