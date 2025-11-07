@@ -198,36 +198,57 @@ AssignContractorCommand will be enhanced in later PRs to check availability. For
 
 ## Block 3: Availability Engine (Depends on: Block 2)
 
+
 ### PR-006: Implement Availability Engine Core Logic
-**Status:** New
-**Dependencies:** PR-003, PR-004, PR-005
+**Status:** Planning
+**Dependencies:** PR-003 ✅, PR-004 ✅, PR-005 ✅
 **Priority:** High
 
 **Description:**
 Implement the availability engine that calculates open time slots for contractors based on their working hours and existing job assignments. This is core domain logic for the scheduling system.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.Domain/Services/AvailabilityService.cs (create) - Domain service
-- src/backend/SmartScheduler.Domain/Services/IAvailabilityService.cs (create) - Service interface
-- src/backend/SmartScheduler.Application/Queries/GetContractorAvailabilityQuery.cs (create) - Availability query
-- src/backend/SmartScheduler.Application/QueryHandlers/GetContractorAvailabilityQueryHandler.cs (create) - Handler
-- src/backend/SmartScheduler.Application/DTOs/AvailabilityDto.cs (create) - Availability DTO
-- src/backend/SmartScheduler.Application/DTOs/TimeSlotDto.cs (create) - Time slot DTO
+**Files (Refined during Planning):**
+- src/backend/SmartScheduler.Domain/Services/IAvailabilityService.cs (create) - Service interface defining availability calculation contract
+- src/backend/SmartScheduler.Domain/Services/AvailabilityService.cs (create) - Domain service implementing availability logic with helper methods
+- src/backend/SmartScheduler.Domain/ValueObjects/TimeSlot.cs (create) - Value object representing time range with validation and helper methods
+- src/backend/SmartScheduler.Domain/Interfaces/IJobRepository.cs (modify) - Add GetByContractorAndDateAsync method
+- src/backend/SmartScheduler.Infrastructure/Persistence/Repositories/JobRepository.cs (modify) - Implement new query method
+- src/backend/SmartScheduler.Application/Queries/GetContractorAvailabilityQuery.cs (create) - Availability query with ContractorId, TargetDate, RequiredDurationHours
+- src/backend/SmartScheduler.Application/QueryHandlers/GetContractorAvailabilityQueryHandler.cs (create) - Handler orchestrating repository and service calls
+- src/backend/SmartScheduler.Application/DTOs/AvailabilityDto.cs (create) - Availability response DTO
+- src/backend/SmartScheduler.Application/DTOs/TimeSlotDto.cs (create) - Time slot DTO for API responses
+- src/backend/SmartScheduler.WebApi/Program.cs (modify) - Register IAvailabilityService in DI container
+
+**Implementation Approach:**
+1. **TimeSlot Value Object**: Immutable time range (TimeOnly start/end) with validation and helper methods (Overlaps, Contains, DurationHours)
+2. **AvailabilityService Methods** (all < 75 lines):
+   - CalculateAvailability: Main orchestration method
+   - GetWorkingHoursForDate: Extract working hours for specific day from weekly schedules
+   - GetOccupiedTimeSlots: Calculate time slots taken by existing jobs (using ScheduledStartTime + EstimatedDurationHours)
+   - FindAvailableGaps: Identify gaps in working hours that fit required duration
+3. **Query Handler**: Validates contractor exists, retrieves schedules and jobs, delegates to service, maps to DTOs
+
+**Edge Cases Handled:**
+- Contractor not working on target day → empty availability list
+- All working hours occupied → empty availability list  
+- No existing jobs → full working hours as available
+- Multiple working periods per day (split shifts) → handle as separate slots
+- Overlapping jobs (data error) → merge overlapping slots gracefully
+- Job duration exceeds gap → filter out gaps too small
 
 **Acceptance Criteria:**
 - [ ] Service calculates available time slots based on working hours
-- [ ] Service excludes time slots occupied by existing jobs
+- [ ] Service excludes time slots occupied by existing jobs (Assigned and InProgress status)
 - [ ] Service accounts for job duration when finding gaps
 - [ ] Edge case: Returns empty list when contractor not working on target date
 - [ ] Edge case: Returns empty list when all slots occupied
+- [ ] Edge case: Handles multiple working periods per day correctly
 - [ ] Query handler retrieves contractor and jobs, delegates to service
-- [ ] Functions decomposed to stay under 75-line limit
+- [ ] All functions stay under 75-line limit through focused helper methods
+- [ ] TimeSlot value object is immutable with proper validation
 
 **Notes:**
-This is complex logic. Break into helper functions: GetWorkingHoursForDate, GetOccupiedSlots, FindGaps. Consider time zone handling carefully.
-
----
-
+Travel time buffer will be deferred to PR-008 (Distance calculation integration). This PR focuses on pure time-based availability. All times assumed in consistent time zone (business local time).
 ### PR-007: Unit Tests for Availability Engine
 **Status:** New
 **Dependencies:** PR-006
