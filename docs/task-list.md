@@ -119,32 +119,38 @@ Use Result pattern for command responses rather than throwing exceptions for bus
 ---
 
 ### PR-004: Implement Contractor Management Queries
-**Status:** New
+**Status:** Planning
+**Agent:** Orange
 **Dependencies:** PR-001, PR-002
 **Priority:** High
 
 **Description:**
 Implement CQRS queries for contractor retrieval: GetContractorByIdQuery, GetAllContractorsQuery, SearchContractorsQuery. Include query handlers and DTOs for read operations.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.Application/Queries/GetContractorByIdQuery.cs (create) - Get by ID query
-- src/backend/SmartScheduler.Application/Queries/GetAllContractorsQuery.cs (create) - List query
-- src/backend/SmartScheduler.Application/Queries/SearchContractorsQuery.cs (create) - Search query
-- src/backend/SmartScheduler.Application/QueryHandlers/GetContractorByIdQueryHandler.cs (create) - Handler
-- src/backend/SmartScheduler.Application/QueryHandlers/GetAllContractorsQueryHandler.cs (create) - Handler
-- src/backend/SmartScheduler.Application/QueryHandlers/SearchContractorsQueryHandler.cs (create) - Handler
-- src/backend/SmartScheduler.Application/DTOs/ContractorDto.cs (create) - Read DTO
-- src/backend/SmartScheduler.Application/DTOs/ContractorListDto.cs (create) - List DTO
+**Files (Refined during Planning by Orange):**
+- src/backend/SmartScheduler.Application/Queries/Contractors/GetContractorByIdQuery.cs (create) - Query to retrieve single contractor by ID
+- src/backend/SmartScheduler.Application/Queries/Contractors/GetAllContractorsQuery.cs (create) - Query to list all contractors with pagination
+- src/backend/SmartScheduler.Application/Queries/Contractors/SearchContractorsQuery.cs (create) - Query to search/filter contractors
+- src/backend/SmartScheduler.Application/QueryHandlers/Contractors/GetContractorByIdQueryHandler.cs (create) - Handler for get by ID
+- src/backend/SmartScheduler.Application/QueryHandlers/Contractors/GetAllContractorsQueryHandler.cs (create) - Handler for list with pagination
+- src/backend/SmartScheduler.Application/QueryHandlers/Contractors/SearchContractorsQueryHandler.cs (create) - Handler for search/filter with pagination
+- src/backend/SmartScheduler.Application/DTOs/Contractors/ContractorDto.cs (create) - Full contractor details DTO
+- src/backend/SmartScheduler.Application/DTOs/Contractors/ContractorListItemDto.cs (create) - Lightweight DTO for lists
+- src/backend/SmartScheduler.Application/DTOs/Contractors/WeeklyScheduleDto.cs (create) - Working hours DTO
+- src/backend/SmartScheduler.Application/DTOs/Contractors/LocationDto.cs (create) - Location DTO
+- src/backend/SmartScheduler.Application/DTOs/Common/PagedResult.cs (create) - Generic pagination wrapper
 
 **Acceptance Criteria:**
 - [ ] Queries return DTOs, not domain entities (CQRS separation)
-- [ ] Search query supports filtering by type, rating, and active status
+- [ ] Search query supports filtering by jobTypeId, minRating, maxRating, and isActive
 - [ ] Query handlers use read-optimized queries (no unnecessary joins)
-- [ ] Queries include pagination support for list operations
-- [ ] DTOs include all necessary data for UI display
+- [ ] GetAllContractorsQuery and SearchContractorsQuery include pagination (page, pageSize)
+- [ ] DTOs include all necessary data for UI display (formatted ID, location, schedule)
+- [ ] Handlers use IContractorRepository for data access
+- [ ] All functions stay under 75-line limit
 
 **Notes:**
-Queries can run in parallel with PR-003 as they don't conflict. Consider using AutoMapper or Mapster for entity-to-DTO mapping.
+Using feature folder structure (Queries/Contractors/, DTOs/Contractors/). Manual mapping (no AutoMapper/Mapster dependency yet). Pagination default: page 1, pageSize 20.
 
 ---
 
