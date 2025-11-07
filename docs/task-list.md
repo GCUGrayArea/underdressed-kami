@@ -257,32 +257,53 @@ Use xUnit with FluentAssertions for readable test assertions. Mock repository to
 ## Block 4: Distance & Mapping Integration (Depends on: Block 1)
 
 ### PR-008: OpenRouteService Integration
-**Status:** New
-**Dependencies:** PR-001
+**Status:** Planning
+**Agent:** Magenta
+**Dependencies:** PR-001 ✅
 **Priority:** High
 
 **Description:**
 Integrate with OpenRouteService API to calculate driving distance and travel time between locations. Implement caching and error handling with fallback to straight-line distance.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.Infrastructure/ExternalServices/IDistanceCalculator.cs (create) - Service interface
-- src/backend/SmartScheduler.Infrastructure/ExternalServices/OpenRouteServiceClient.cs (create) - API client
-- src/backend/SmartScheduler.Infrastructure/ExternalServices/DistanceCalculator.cs (create) - Main service
-- src/backend/SmartScheduler.Infrastructure/ExternalServices/DistanceCache.cs (create) - Caching layer
-- src/backend/SmartScheduler.Infrastructure/ExternalServices/Models/RouteRequest.cs (create) - Request model
-- src/backend/SmartScheduler.Infrastructure/ExternalServices/Models/RouteResponse.cs (create) - Response model
+**Files (Refined during Planning by Magenta):**
+- src/backend/SmartScheduler.Infrastructure/ExternalServices/IDistanceCalculator.cs (create) - Service interface defining distance calculation contract
+- src/backend/SmartScheduler.Infrastructure/ExternalServices/Models/DistanceResult.cs (create) - Result model with distance, duration, and metadata
+- src/backend/SmartScheduler.Infrastructure/ExternalServices/Models/RouteRequest.cs (create) - OpenRouteService API request model
+- src/backend/SmartScheduler.Infrastructure/ExternalServices/Models/RouteResponse.cs (create) - OpenRouteService API response model (GeoJSON)
+- src/backend/SmartScheduler.Infrastructure/ExternalServices/OpenRouteServiceClient.cs (create) - HTTP client wrapper with retry logic
+- src/backend/SmartScheduler.Infrastructure/ExternalServices/DistanceCache.cs (create) - In-memory cache with 24-hour TTL
+- src/backend/SmartScheduler.Infrastructure/ExternalServices/DistanceCalculator.cs (create) - Main service orchestrating cache/API/fallback
+- src/backend/SmartScheduler.Infrastructure/SmartScheduler.Infrastructure.csproj (modify) - Add caching and HTTP packages
+- src/backend/SmartScheduler.WebApi/Program.cs (modify) - Register services with DI container
+
+**Implementation Approach:**
+- Interface-driven design with IDistanceCalculator for testability
+- Three-layer architecture: Client → Cache → Fallback
+- Cache key format: "{lat1:F6},{lon1:F6}|{lat2:F6},{lon2:F6}" (bidirectional)
+- Exponential backoff on rate limits: 1s, 2s, 4s, 8s (max 4 retries)
+- Fallback uses existing Location.DistanceToMiles() for straight-line calculation
+- Structured logging with correlation IDs for debugging
+- API endpoint: POST https://api.openrouteservice.org/v2/directions/driving-car
+
+**Caching Strategy:**
+- IMemoryCache with absolute expiration of 24 hours
+- Only cache successful API responses (not errors)
+- Thread-safe implementation with concurrent access support
+- Consider max size limit of 10,000 entries (~1MB memory)
 
 **Acceptance Criteria:**
 - [ ] Successfully calls OpenRouteService API with coordinates
 - [ ] Parses distance (meters) and duration (seconds) from response
 - [ ] Caches results for 24 hours using location pair as key
 - [ ] Falls back to straight-line distance calculation if API unavailable
-- [ ] Implements exponential backoff on rate limit errors
+- [ ] Implements exponential backoff on rate limit errors (429)
 - [ ] API key loaded from environment variable (not hardcoded)
 - [ ] Includes detailed logging for API calls and errors
+- [ ] Handles invalid coordinates (400), auth errors (401/403), and timeouts
+- [ ] Result includes metadata indicating if from API or fallback
 
 **Notes:**
-OpenRouteService free tier has 40 requests/minute limit. Caching is critical. Consider implementing request queuing if hitting rate limits.
+OpenRouteService free tier has 40 requests/minute limit. Caching is critical. The existing Location value object already implements Haversine formula for fallback calculation. This service will be consumed by PR-006 (Availability Engine) and PR-010 (Scoring Algorithm).
 
 ---
 
@@ -459,34 +480,83 @@ This is the most critical endpoint for the user experience. Performance logging 
 
 ---
 
-## Block 7: Event System & SignalR (Depends on: Block 6)
-
 ### PR-015: Domain Event Infrastructure
-**Status:** New
+**Status:** Planning
+**Agent:** Purple
 **Dependencies:** PR-001
 **Priority:** High
 
 **Description:**
 Implement in-memory message bus using MediatR for domain events. Define domain events (JobAssigned, ScheduleUpdated, ContractorRated) and event handlers.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.Domain/Events/DomainEvent.cs (create) - Base event class
-- src/backend/SmartScheduler.Domain/Events/JobAssignedEvent.cs (create) - Event definition
+**Planning Notes (Purple):**
+
+**EXISTING INFRASTRUCTURE (created by PR-003, PR-004, PR-005):**
+- DomainEvent.cs (base class with EventId, OccurredAt) - ALREADY EXISTS
+- JobAssignedEvent.cs - ALREADY EXISTS
+- ContractorCreatedEvent.cs, ContractorUpdatedEvent.cs, ContractorDeactivatedEvent.cs - ALREADY EXISTS
+- JobCreatedEvent.cs - ALREADY EXISTS
+- Command handlers already use IPublisher/IMediator to publish events
+- MediatR 13.1.0 already installed in Application layer
+
+**CRITICAL ISSUE IDENTIFIED:**
+- DomainEvent does NOT implement INotification (MediatR interface)
+- Events are being published but won't be handled without INotification
+- This must be fixed first
+
+**MISSING INFRASTRUCTURE (what PR-015 needs to create):**
+1. Make DomainEvent implement INotification (modify existing file)
+2. Create new event types:
+   - ScheduleUpdatedEvent.cs (when contractor schedule changes)
+   - ContractorRatedEvent.cs (when contractor rating updated)
+3. Create event handlers:
+   - AuditLogEventHandler.cs (logs ALL domain events for audit trail)
+   - JobAssignedEventHandler.cs (business logic when job assigned)
+   - ScheduleUpdatedEventHandler.cs (business logic when schedule changes)
+4. Create audit infrastructure:
+   - DomainEventLog entity (for persisting events)
+   - IDomainEventLogRepository interface
+   - DomainEventLogRepository implementation
+5. Register MediatR in Program.cs (currently missing!)
+6. Register event handlers in DI container
+
+**Files (Refined during Planning by Purple):**
+- src/backend/SmartScheduler.Domain/Events/DomainEvent.cs (MODIFY) - Add INotification interface
 - src/backend/SmartScheduler.Domain/Events/ScheduleUpdatedEvent.cs (create) - Event definition
 - src/backend/SmartScheduler.Domain/Events/ContractorRatedEvent.cs (create) - Event definition
-- src/backend/SmartScheduler.Application/EventHandlers/JobAssignedEventHandler.cs (create) - Handler
-- src/backend/SmartScheduler.Infrastructure/Messaging/EventDispatcher.cs (create) - Event dispatcher
+- src/backend/SmartScheduler.Domain/Entities/DomainEventLog.cs (create) - Audit log entity
+- src/backend/SmartScheduler.Domain/Interfaces/IDomainEventLogRepository.cs (create) - Repository interface
+- src/backend/SmartScheduler.Application/EventHandlers/AuditLogEventHandler.cs (create) - Handler for audit logging
+- src/backend/SmartScheduler.Application/EventHandlers/JobAssignedEventHandler.cs (create) - Handler for job assignment
+- src/backend/SmartScheduler.Application/EventHandlers/ScheduleUpdatedEventHandler.cs (create) - Handler for schedule updates
+- src/backend/SmartScheduler.Infrastructure/Persistence/Repositories/DomainEventLogRepository.cs (create) - Repository implementation
+- src/backend/SmartScheduler.Infrastructure/Persistence/Configurations/DomainEventLogConfiguration.cs (create) - EF configuration
+- src/backend/SmartScheduler.WebApi/Program.cs (MODIFY) - Register MediatR and event handlers
+- src/backend/SmartScheduler.Infrastructure/Migrations/[timestamp]_AddDomainEventLog.cs (create) - Migration for audit table
 
 **Acceptance Criteria:**
-- [ ] Domain events published via MediatR when commands complete
+- [x] DomainEvent implements INotification for MediatR
+- [ ] Domain events published via MediatR when commands complete (ALREADY WORKING in handlers)
 - [ ] Event handlers process events asynchronously
-- [ ] Events include timestamp and relevant entity IDs
-- [ ] Event dispatcher logs all events for audit trail
+- [ ] Events include timestamp and relevant entity IDs (ALREADY WORKING)
+- [ ] AuditLogEventHandler logs all events to database for audit trail
 - [ ] Multiple handlers can subscribe to same event
 - [ ] Events do not block command completion (fire and forget)
+- [ ] MediatR properly registered in DI container
+- [ ] Database migration creates DomainEventLog table
+
+**Implementation Approach:**
+1. Modify DomainEvent to implement INotification
+2. Create new event types (ScheduleUpdated, ContractorRated)
+3. Create DomainEventLog entity and repository
+4. Create AuditLogEventHandler that logs ALL domain events
+5. Create specific event handlers for business logic
+6. Register MediatR in Program.cs with assembly scanning
+7. Generate and apply migration for DomainEventLog table
+8. Test event publishing and handling
 
 **Notes:**
-Design with future migration to distributed message broker in mind (AWS SQS). Keep event schemas simple and serializable.
+Design with future migration to distributed message broker in mind (AWS SQS). Keep event schemas simple and serializable. AuditLogEventHandler provides complete audit trail of all domain events. Fire-and-forget pattern achieved through MediatR's INotification pub/sub.
 
 ---
 
