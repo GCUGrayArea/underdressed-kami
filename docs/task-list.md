@@ -41,7 +41,7 @@ This is the foundation for all subsequent work. Ensure proper layer references (
 ---
 
 ### PR-002: Database Schema and EF Core Configuration
-**Status:** Planning
+**Status:** In Progress
 **Agent:** Orange
 **Dependencies:** PR-001
 **Priority:** High
@@ -49,17 +49,24 @@ This is the foundation for all subsequent work. Ensure proper layer references (
 **Description:**
 Define PostgreSQL database schema using EF Core Code First approach. Create domain entities (Contractor, Job, Schedule) with proper relationships, value objects, and EF Core entity configurations. Generate and apply initial migration.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.Domain/Entities/Contractor.cs (create) - Contractor entity
-- src/backend/SmartScheduler.Domain/Entities/Job.cs (create) - Job entity
-- src/backend/SmartScheduler.Domain/Entities/Assignment.cs (create) - Assignment entity
+**Files (Refined during Planning by Orange):**
+- src/backend/SmartScheduler.Domain/Class1.cs (delete) - Remove template file
+- src/backend/SmartScheduler.Application/Class1.cs (delete) - Remove template file
+- src/backend/SmartScheduler.Infrastructure/Class1.cs (delete) - Remove template file
+- src/backend/SmartScheduler.Domain/Entities/JobType.cs (create) - Job type entity
+- src/backend/SmartScheduler.Domain/Entities/Contractor.cs (create) - Contractor entity with FormattedId
+- src/backend/SmartScheduler.Domain/Entities/Job.cs (create) - Job entity with FormattedId
+- src/backend/SmartScheduler.Domain/Entities/WeeklySchedule.cs (create) - Working hours entity
 - src/backend/SmartScheduler.Domain/ValueObjects/Location.cs (create) - Location value object
-- src/backend/SmartScheduler.Domain/ValueObjects/TimeSlot.cs (create) - TimeSlot value object
-- src/backend/SmartScheduler.Domain/ValueObjects/WorkingHours.cs (create) - WorkingHours value object
+- src/backend/SmartScheduler.Domain/Interfaces/IContractorRepository.cs (create) - Repository interface
+- src/backend/SmartScheduler.Domain/Interfaces/IJobRepository.cs (create) - Repository interface
 - src/backend/SmartScheduler.Infrastructure/Persistence/ApplicationDbContext.cs (create) - EF Core context
+- src/backend/SmartScheduler.Infrastructure/Persistence/Configurations/JobTypeConfiguration.cs (create) - EF configuration
 - src/backend/SmartScheduler.Infrastructure/Persistence/Configurations/ContractorConfiguration.cs (create) - EF configuration
 - src/backend/SmartScheduler.Infrastructure/Persistence/Configurations/JobConfiguration.cs (create) - EF configuration
-- src/backend/SmartScheduler.Infrastructure/Migrations/ (create) - Initial migration files
+- src/backend/SmartScheduler.Infrastructure/Persistence/Configurations/WeeklyScheduleConfiguration.cs (create) - EF configuration
+- src/backend/SmartScheduler.Infrastructure/Persistence/Seeds/JobTypeSeed.cs (create) - Seed initial job types
+- src/backend/SmartScheduler.Infrastructure/Migrations/[timestamp]_InitialCreate.cs (create) - Initial migration
 
 **Acceptance Criteria:**
 - [ ] Domain entities follow DDD principles with encapsulation
