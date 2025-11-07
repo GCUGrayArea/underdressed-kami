@@ -639,6 +639,7 @@ Set up React application structure with routing, layout components, navigation, 
 - src/frontend/src/pages/Jobs.tsx (create) - Jobs placeholder
 - src/frontend/src/pages/NotFound.tsx (create) - 404 page
 - src/frontend/src/types/index.ts (create) - Common TypeScript types
+
 **Acceptance Criteria:**
 - [ ] React app renders in browser at localhost:5173
 - [ ] Routing configured with routes for dashboard, contractors, jobs
@@ -653,22 +654,27 @@ Use React Router v6 with lazy loading for code splitting. Set up Material-UI wit
 ---
 
 ### PR-018: API Client and React Query Setup
-**Status:** New
+**Status:** Planning
 **Dependencies:** PR-017
 **Priority:** High
 
 **Description:**
 Set up Axios HTTP client with interceptors and React Query for server state management. Configure base URL, error handling, and query defaults.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/frontend/src/api/client.ts (create) - Axios client configuration
-- src/frontend/src/api/contractors.ts (create) - Contractor API methods
-- src/frontend/src/api/jobs.ts (create) - Job API methods
-- src/frontend/src/api/recommendations.ts (create) - Recommendation API methods
-- src/frontend/src/hooks/useContractors.ts (create) - React Query hooks
-- src/frontend/src/hooks/useJobs.ts (create) - React Query hooks
-- src/frontend/src/providers/QueryProvider.tsx (create) - React Query provider
-- src/frontend/src/types/api.ts (create) - API type definitions
+**Files (Refined during Planning):**
+- src/frontend/src/main.tsx (modify) - Wrap App with Router and ThemeProvider
+- src/frontend/src/App.tsx (modify) - Replace with RouterProvider
+- src/frontend/index.html (verify) - Update title and meta
+- src/frontend/src/theme.ts (create) - MUI theme configuration
+- src/frontend/src/router.tsx (create) - Route definitions with lazy loading
+- src/frontend/src/layouts/MainLayout.tsx (create) - Main layout with nav
+- src/frontend/src/components/Navigation.tsx (create) - Navigation links
+- src/frontend/src/components/LoadingFallback.tsx (create) - Loading spinner
+- src/frontend/src/pages/Dashboard.tsx (create) - Dashboard placeholder
+- src/frontend/src/pages/Contractors.tsx (create) - Contractors placeholder
+- src/frontend/src/pages/Jobs.tsx (create) - Jobs placeholder
+- src/frontend/src/pages/NotFound.tsx (create) - 404 page
+- src/frontend/src/types/index.ts (create) - Common TypeScript types
 
 **Acceptance Criteria:**
 - [ ] Axios client configured with backend base URL from environment
