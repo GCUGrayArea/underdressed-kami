@@ -526,16 +526,7 @@ Implement in-memory message bus using MediatR for domain events. Define domain e
 - src/backend/SmartScheduler.Domain/Events/ContractorRatedEvent.cs (create) - Event definition
 - src/backend/SmartScheduler.Domain/Entities/DomainEventLog.cs (create) - Audit log entity
 - src/backend/SmartScheduler.Domain/Interfaces/IDomainEventLogRepository.cs (create) - Repository interface
-- src/backend/SmartScheduler.Application/EventHandlers/AuditLogEventHandler.cs (create) - Handler for audit logging
-- src/backend/SmartScheduler.Application/EventHandlers/JobAssignedEventHandler.cs (create) - Handler for job assignment
-- src/backend/SmartScheduler.Application/EventHandlers/ScheduleUpdatedEventHandler.cs (create) - Handler for schedule updates
-- src/backend/SmartScheduler.Infrastructure/Persistence/Repositories/DomainEventLogRepository.cs (create) - Repository implementation
-- src/backend/SmartScheduler.Infrastructure/Persistence/Configurations/DomainEventLogConfiguration.cs (create) - EF configuration
-- src/backend/SmartScheduler.WebApi/Program.cs (MODIFY) - Register MediatR and event handlers
-- src/backend/SmartScheduler.Infrastructure/Migrations/[timestamp]_AddDomainEventLog.cs (create) - Migration for audit table
-
-**Acceptance Criteria:**
-- [x] DomainEvent implements INotification for MediatR
+**Files (Refined during Planning):**- src/frontend/src/main.tsx (modify) - Wrap App with Router and ThemeProvider- src/frontend/src/App.tsx (modify) - Replace with RouterProvider- src/frontend/index.html (verify) - Update title and meta- src/frontend/src/theme.ts (create) - MUI theme configuration- src/frontend/src/router.tsx (create) - Route definitions with lazy loading- src/frontend/src/layouts/MainLayout.tsx (create) - Main layout with nav- src/frontend/src/components/Navigation.tsx (create) - Navigation links- src/frontend/src/components/LoadingFallback.tsx (create) - Loading spinner- src/frontend/src/pages/Dashboard.tsx (create) - Dashboard placeholder- src/frontend/src/pages/Contractors.tsx (create) - Contractors placeholder- src/frontend/src/pages/Jobs.tsx (create) - Jobs placeholder- src/frontend/src/pages/NotFound.tsx (create) - 404 page- src/frontend/src/types/index.ts (create) - Common TypeScript types
 - [ ] Domain events published via MediatR when commands complete (ALREADY WORKING in handlers)
 - [ ] Event handlers process events asynchronously
 - [ ] Events include timestamp and relevant entity IDs (ALREADY WORKING)
