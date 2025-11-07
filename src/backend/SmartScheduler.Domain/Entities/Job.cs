@@ -65,6 +65,23 @@ public class Job
         CreatedAt = DateTime.UtcNow;
     }
 
+    public void UpdateDetails(
+        Location location,
+        DateTime desiredDate,
+        decimal estimatedDurationHours,
+        TimeOnly? desiredTime = null)
+    {
+        if (estimatedDurationHours <= 0)
+            throw new ArgumentException(
+                "Estimated duration must be positive",
+                nameof(estimatedDurationHours));
+
+        Location = location;
+        DesiredDate = desiredDate.Date;
+        DesiredTime = desiredTime;
+        EstimatedDurationHours = Math.Round(estimatedDurationHours, 2);
+    }
+
     public void AssignToContractor(Guid contractorId, DateTime scheduledStartTime)
     {
         if (contractorId == Guid.Empty)
