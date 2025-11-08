@@ -52,8 +52,12 @@ builder.Services.AddScoped<IDistanceCalculator, DistanceCalculator>();
 
 // Register MediatR for CQRS pattern
 builder.Services.AddMediatR(cfg =>
+{
     cfg.RegisterServicesFromAssembly(
-        typeof(SmartScheduler.Application.Commands.CreateContractorCommand).Assembly));
+        typeof(SmartScheduler.Application.Commands.CreateContractorCommand).Assembly);
+    // Register event handlers from WebApi layer (SignalR broadcast handler)
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
 
 // Note: FluentValidation validators are already in Application layer
 // They will be resolved through MediatR pipeline if needed
@@ -69,7 +73,10 @@ builder.Services.AddControllers()
 // Add Problem Details for standardized error responses
 builder.Services.AddProblemDetails();
 
-// Add CORS for frontend communication
+// Add SignalR for real-time communication
+builder.Services.AddSignalR();
+
+// Add CORS for frontend communication (must allow credentials for SignalR)
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -79,7 +86,7 @@ builder.Services.AddCors(options =>
                     ?? "http://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials(); // Required for SignalR
     });
 });
 
@@ -107,6 +114,9 @@ app.UseStatusCodePages();
 
 // Map controllers
 app.MapControllers();
+
+// Map SignalR hub
+app.MapHub<SmartScheduler.WebApi.Hubs.SchedulingHub>("/hubs/scheduling");
 
 var summaries = new[]
 {
