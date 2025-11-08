@@ -18,6 +18,8 @@ builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
 
 // Register domain services
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
+builder.Services.AddScoped<IScoringService, ScoringService>();
+builder.Services.AddScoped<IDistanceService, SmartScheduler.Infrastructure.Services.DistanceService>();
 
 // Register memory cache for distance caching
 builder.Services.AddMemoryCache(options =>
