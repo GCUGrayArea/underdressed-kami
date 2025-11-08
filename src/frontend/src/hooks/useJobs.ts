@@ -1,6 +1,6 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useContext, useEffect } from 'react';
-import { jobApi, type JobSearchParams } from '../services/jobApi';
+import { jobApi, type JobSearchParams, type CreateJobData } from '../services/jobApi';
 import { SignalRContext } from '../contexts/SignalRContext';
 import type { JobDto } from '../types/dto';
 
@@ -111,4 +111,19 @@ interface JobUpdatedEvent {
 interface JobCreatedEvent {
   jobId: string;
   job: JobDto;
+}
+
+/**
+ * React Query mutation hook for creating a job
+ */
+export function useCreateJob() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateJobData) => jobApi.createJob(data),
+    onSuccess: () => {
+      // Invalidate job queries to trigger refetch
+      invalidateJobQueries(queryClient);
+    },
+  });
 }

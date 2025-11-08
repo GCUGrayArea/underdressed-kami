@@ -20,6 +20,10 @@ const Jobs = lazy(() =>
   import('./pages/Jobs').then((module) => ({ default: module.Jobs }))
 );
 
+const CreateJob = lazy(() =>
+  import('./pages/CreateJob').then((module) => ({ default: module.CreateJob }))
+);
+
 const NotFound = lazy(() =>
   import('./pages/NotFound').then((module) => ({ default: module.NotFound }))
 );
@@ -62,6 +66,10 @@ export const router = createBrowserRouter([
       {
         path: 'jobs',
         element: withSuspense(Jobs),
+      },
+      {
+        path: 'jobs/new',
+        element: withSuspense(CreateJob),
       },
       {
         path: '*',

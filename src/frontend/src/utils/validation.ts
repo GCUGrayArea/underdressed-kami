@@ -151,3 +151,77 @@ export function validateWorkingHours(
 
   return undefined;
 }
+
+/**
+ * Validates customer ID (1-100 characters)
+ */
+export function validateCustomerId(customerId: string): string | undefined {
+  if (!customerId || customerId.trim().length === 0) {
+    return 'Customer ID is required';
+  }
+  if (customerId.length > 100) {
+    return 'Customer ID must not exceed 100 characters';
+  }
+  return undefined;
+}
+
+/**
+ * Validates customer name (1-200 characters)
+ */
+export function validateCustomerName(customerName: string): string | undefined {
+  if (!customerName || customerName.trim().length === 0) {
+    return 'Customer name is required';
+  }
+  if (customerName.length > 200) {
+    return 'Customer name must not exceed 200 characters';
+  }
+  return undefined;
+}
+
+/**
+ * Validates estimated duration (0.1-24 hours)
+ */
+export function validateDuration(duration: number | undefined): string | undefined {
+  if (duration === undefined || duration === null) {
+    return 'Estimated duration is required';
+  }
+  if (duration < 0.1 || duration > 24) {
+    return 'Duration must be between 0.1 and 24 hours';
+  }
+  return undefined;
+}
+
+/**
+ * Validates date is in the future
+ */
+export function validateFutureDate(date: Date | null): string | undefined {
+  if (!date) {
+    return 'Desired date is required';
+  }
+
+  // Set time to start of day for comparison
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const selectedDate = new Date(date);
+  selectedDate.setHours(0, 0, 0, 0);
+
+  if (selectedDate < today) {
+    return 'Desired date must be today or in the future';
+  }
+
+  return undefined;
+}
+
+/**
+ * Validates address (optional, max 500 characters)
+ */
+export function validateAddress(address: string | undefined): string | undefined {
+  if (!address || address.trim().length === 0) {
+    return undefined; // Address is optional
+  }
+  if (address.length > 500) {
+    return 'Address must not exceed 500 characters';
+  }
+  return undefined;
+}
