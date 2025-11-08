@@ -334,61 +334,146 @@ OpenRouteService free tier has 40 requests/minute limit. Caching is critical. Th
 ---
 
 ### PR-009: Unit Tests for Distance Calculator
-**Status:** New
-**Dependencies:** PR-008
+**Status:** Planning
+**Agent:** Brown
+**Dependencies:** PR-008 ✅
 **Priority:** Medium
 
 **Description:**
-Unit tests for distance calculator including successful API calls, cache hits, error scenarios, and fallback behavior.
+Unit tests for distance calculator including successful API calls, cache hits, error scenarios, and fallback behavior. Comprehensive test coverage for OpenRouteService integration with mocked HTTP client.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.Tests/Infrastructure/ExternalServices/DistanceCalculatorTests.cs (create) - Test suite
-- src/backend/SmartScheduler.Tests/Infrastructure/ExternalServices/OpenRouteServiceClientTests.cs (create) - Client tests
+**Files (Refined during Planning by Brown):**
+- src/backend/SmartScheduler.Tests/Infrastructure/ExternalServices/DistanceCalculatorTests.cs (create) - Comprehensive test suite for DistanceCalculator with cache, API, and fallback scenarios
+- src/backend/SmartScheduler.Tests/Infrastructure/ExternalServices/OpenRouteServiceClientTests.cs (create) - Tests for HTTP client wrapper covering successful calls, retries, and error handling
+- src/backend/SmartScheduler.Tests/Infrastructure/ExternalServices/DistanceCacheTests.cs (create) - Tests for cache behavior (hit, miss, expiration, concurrency)
+- src/backend/SmartScheduler.Tests/TestHelpers/MockHttpMessageHandler.cs (create) - Custom HttpMessageHandler for mocking HTTP responses
+
+**Implementation Approach:**
+1. **MockHttpMessageHandler Helper**: Custom handler allowing test-specific responses for different URLs/requests
+2. **DistanceCalculatorTests** (3 test classes using xUnit nested classes):
+   - SuccessfulCalculationTests: Valid coordinates, API success, result accuracy
+   - CacheTests: Cache hit avoids API, cache miss calls API, expired entries refresh
+   - FallbackTests: API unavailable triggers Location.DistanceToMiles(), timeout handling, invalid response handling
+3. **OpenRouteServiceClientTests**:
+   - Successful API call parsing (GeoJSON response to DistanceResult)
+   - Rate limit (429) triggers exponential backoff with retries
+   - Auth errors (401/403) fail fast without retries
+   - Invalid coordinates (400) handled gracefully
+   - Timeout scenarios
+4. **DistanceCacheTests**:
+   - Cache key bidirectionality: (A→B) and (B→A) use same cache entry
+   - Thread-safe concurrent access
+   - Absolute expiration after 24 hours
+   - Max size limit enforcement (10,000 entries)
+
+**Test Data Strategy:**
+- Use well-known coordinates: NYC (40.7128,-74.0060), LA (34.0522,-118.2437)
+- Expected straight-line distance NYC-LA: ~2451 miles (Haversine)
+- Mocked API distance NYC-LA: ~2800 miles (road distance)
+- Mock responses use actual OpenRouteService GeoJSON structure
 
 **Acceptance Criteria:**
-- [ ] Test: Successful API call returns correct distance and duration
-- [ ] Test: Cache hit avoids API call
-- [ ] Test: API unavailable triggers fallback to straight-line distance
-- [ ] Test: Invalid coordinates handled gracefully
-- [ ] Test: Rate limit error triggers exponential backoff
-- [ ] All tests pass with mocked HTTP client
+- [ ] Test: Successful API call returns correct distance and duration from GeoJSON parsing
+- [ ] Test: Cache hit avoids API call (verify HttpClient not invoked)
+- [ ] Test: API unavailable (404, 500, timeout) triggers fallback to straight-line distance
+- [ ] Test: Invalid coordinates (null, out of range) handled gracefully with ArgumentException
+- [ ] Test: Rate limit error (429) triggers exponential backoff (1s, 2s, 4s, 8s) with max 4 retries
+- [ ] Test: Cache bidirectionality - (A→B) and (B→A) return same cached result
+- [ ] Test: Concurrent requests for same location pair don't cause duplicate API calls
+- [ ] Test: DistanceResult includes metadata (IsFromCache, IsFallback flags)
+- [ ] All tests pass with >85% code coverage for distance calculation components
+- [ ] No external API calls during test execution (all mocked)
 
 **Notes:**
-Use Moq to mock HttpClient. Consider using WireMock.NET for more realistic HTTP mocking.
+Use xUnit with FluentAssertions for readable assertions. Moq for dependency mocking. MockHttpMessageHandler pattern avoids need for WireMock.NET dependency. Test both DistanceCalculator (orchestration) and OpenRouteServiceClient (HTTP details) separately for focused test isolation.
 
 ---
 
 ## Block 5: Scoring & Ranking Engine (Depends on: Block 3, Block 4)
 
 ### PR-010: Implement Scoring Algorithm
-**Status:** New
-**Dependencies:** PR-006, PR-008
+**Status:** Planning
+**Agent:** Brown
+**Dependencies:** PR-006 ✅, PR-008 ✅
 **Priority:** High
 
 **Description:**
-Implement the weighted scoring algorithm that ranks contractors based on availability, rating, and distance. This is the core intelligence of the scheduling system.
+Implement the weighted scoring algorithm that ranks contractors based on availability, rating, and distance. This is the core intelligence of the scheduling system. Orchestrates AvailabilityService and DistanceCalculator to produce ranked contractor recommendations.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/backend/SmartScheduler.Domain/Services/ScoringService.cs (create) - Scoring domain service
-- src/backend/SmartScheduler.Domain/Services/IScoringService.cs (create) - Service interface
-- src/backend/SmartScheduler.Domain/ValueObjects/ScoringWeights.cs (create) - Weights configuration
-- src/backend/SmartScheduler.Domain/ValueObjects/ContractorScore.cs (create) - Score result
-- src/backend/SmartScheduler.Application/Queries/GetRankedContractorsQuery.cs (create) - Ranking query
-- src/backend/SmartScheduler.Application/QueryHandlers/GetRankedContractorsQueryHandler.cs (create) - Handler
-- src/backend/SmartScheduler.Application/DTOs/RankedContractorDto.cs (create) - Result DTO
-- src/backend/SmartScheduler.Application/DTOs/ScoreBreakdownDto.cs (create) - Score details DTO
+**Files (Refined during Planning by Brown):**
+- src/backend/SmartScheduler.Domain/Services/IScoringService.cs (create) - Service interface defining scoring contract
+- src/backend/SmartScheduler.Domain/Services/ScoringService.cs (create) - Domain service implementing scoring with helper methods
+- src/backend/SmartScheduler.Domain/ValueObjects/ScoringWeights.cs (create) - Immutable weights configuration with validation
+- src/backend/SmartScheduler.Domain/ValueObjects/ContractorScore.cs (create) - Score result value object with breakdown
+- src/backend/SmartScheduler.Application/Queries/Recommendations/GetRankedContractorsQuery.cs (create) - Query with JobTypeId, TargetDate, TargetTime, JobLocation, RequiredDurationHours, TopN
+- src/backend/SmartScheduler.Application/QueryHandlers/Recommendations/GetRankedContractorsQueryHandler.cs (create) - Handler orchestrating repositories and services
+- src/backend/SmartScheduler.Application/DTOs/Recommendations/RankedContractorDto.cs (create) - Result DTO with contractor details and score
+- src/backend/SmartScheduler.Application/DTOs/Recommendations/ScoreBreakdownDto.cs (create) - Transparent score component details
+- src/backend/SmartScheduler.WebApi/Program.cs (modify) - Register IScoringService in DI container
+
+**Implementation Approach:**
+
+1. **ScoringWeights Value Object** (immutable):
+   - Properties: AvailabilityWeight, RatingWeight, DistanceWeight (all decimal 0-1)
+   - Validation: Weights must sum to 1.0
+   - Default constructor: 0.4, 0.3, 0.3 (40% availability, 30% rating, 30% distance)
+   - Factory methods for custom weights
+
+2. **ContractorScore Value Object**:
+   - Properties: ContractorId, OverallScore (0-1), AvailabilityScore, RatingScore, DistanceScore, BestAvailableSlot (TimeSlot?)
+   - Comparison support for sorting by OverallScore descending
+   - Tie-breaker: If OverallScore equal, use AvailabilityScore, then RatingScore, then ContractorId (stable sort)
+
+3. **ScoringService Methods** (all < 75 lines):
+   - **RankContractors**: Main orchestration method
+     - Input: List<Contractor>, Job requirements (date, time, location, duration), ScoringWeights
+     - Output: List<ContractorScore> sorted by OverallScore descending
+     - Filters out contractors with no availability or distance >50mi
+   - **CalculateAvailabilityScore** (helper):
+     - Uses AvailabilityService to get available slots
+     - Finds slot closest to desired time
+     - Scoring: 1.0 if slot includes desired time, 0.7 if within 2hrs, 0.4 if same day, 0.0 if no availability
+   - **CalculateRatingScore** (helper):
+     - Simple normalization: rating / 5.0
+   - **CalculateDistanceScore** (helper):
+     - Uses DistanceCalculator to get travel distance
+     - Scoring: 1.0 for <10mi, linear decay 10-30mi, 0.2 for 30-50mi, 0.0 for >50mi
+     - Formula: max(0, 1.0 - (distance - 10) / 40) for distance >= 10mi
+   - **ApplyWeights** (helper):
+     - OverallScore = (AvailScore * AvailWeight) + (RatingScore * RatingWeight) + (DistScore * DistWeight)
+
+4. **Query Handler Orchestration**:
+   - Retrieve all active contractors with matching JobTypeId
+   - For each contractor:
+     - Calculate availability using AvailabilityService
+     - Calculate distance using DistanceCalculator
+     - Call ScoringService to compute score
+   - Filter contractors with OverallScore > 0
+   - Sort by OverallScore descending
+   - Take TopN (default 5)
+   - Map to DTOs with score breakdown
+
+**Edge Cases Handled:**
+- Contractor with no availability → AvailabilityScore = 0.0 → filtered out
+- Distance >50mi → DistanceScore = 0.0 → likely filtered out unless other scores very high
+- No contractors match job type → return empty list
+- All contractors unavailable → return empty list
+- Tie scores → stable sort by ContractorId
 
 **Acceptance Criteria:**
-- [ ] Calculates availability score: 1.0 for within 30min, 0.7 for within 2hrs, 0.4 same day
+- [ ] Calculates availability score: 1.0 for slot includes desired time, 0.7 for within 2hrs, 0.4 same day, 0.0 otherwise
 - [ ] Calculates rating score: normalized rating/5.0
 - [ ] Calculates distance score: 1.0 for <10mi, linear decay 10-30mi, 0.2 for 30-50mi, 0.0 for >50mi
-- [ ] Applies weights: 40% availability, 30% rating, 30% distance (configurable)
-- [ ] Filters contractors by matching job type
-- [ ] Returns top N contractors sorted by score (default N=5)
-- [ ] Includes score breakdown in response for transparency
+- [ ] Applies configurable weights: default 40% availability, 30% rating, 30% distance
+- [ ] Filters contractors by matching job type (active contractors only)
+- [ ] Returns top N contractors sorted by overall score descending (default N=5)
+- [ ] Includes detailed score breakdown in response for transparency
+- [ ] All functions stay under 75-line limit through focused helper methods
+- [ ] ScoringWeights validates that weights sum to 1.0
+- [ ] Excludes contractors with OverallScore = 0.0 from results
 
 **Notes:**
-Decompose scoring logic: CalculateAvailabilityScore, CalculateRatingScore, CalculateDistanceScore as separate methods. Make weights configurable via value object.
+Decomposed scoring logic into focused helper methods for testability and adherence to 75-line limit. ScoringService depends on IAvailabilityService and IDistanceCalculator (injected). Query handler orchestrates all data retrieval and service calls. Uses feature folder structure (Queries/Recommendations/, DTOs/Recommendations/).
 
 ---
 
@@ -453,8 +538,8 @@ Use [ApiController] attribute for automatic model validation. Return problem det
 
 ### PR-013: Job Management API Endpoints
 **Status:** Planning
-**Agent:** [Planning Agent]
-**Dependencies:** PR-005
+**Agent:** Brown
+**Dependencies:** PR-005 ✅
 **Priority:** High
 
 **Description:**
