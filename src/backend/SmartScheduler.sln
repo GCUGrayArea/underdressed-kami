@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartScheduler.Infrastructu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartScheduler.WebApi", "SmartScheduler.WebApi\SmartScheduler.WebApi.csproj", "{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartScheduler.Tests", "SmartScheduler.Tests\SmartScheduler.Tests.csproj", "{5865284A-948D-4EC7-8DC2-78CE66A4C0F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{800E40B4-34C1-4C69-8CCE-3CF0584FBE2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5865284A-948D-4EC7-8DC2-78CE66A4C0F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5865284A-948D-4EC7-8DC2-78CE66A4C0F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5865284A-948D-4EC7-8DC2-78CE66A4C0F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5865284A-948D-4EC7-8DC2-78CE66A4C0F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
