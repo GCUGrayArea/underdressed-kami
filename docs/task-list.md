@@ -421,7 +421,8 @@ Use theory tests (xUnit [Theory]) to test multiple scoring scenarios efficiently
 ## Block 6: REST API Endpoints (Depends on: Block 5)
 
 ### PR-012: Contractor Management API Endpoints
-**Status:** Planning
+**Status:** In Progress
+**Agent:** Pink
 **Dependencies:** PR-003, PR-004
 **Priority:** High
 
