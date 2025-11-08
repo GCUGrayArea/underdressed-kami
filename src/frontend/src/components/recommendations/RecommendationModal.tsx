@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -16,12 +17,14 @@ import type { JobDto, RankedContractorDto } from '../../types/dto';
 import { useRecommendations } from '../../hooks/useRecommendations';
 import type { GetRecommendationsRequest } from '../../services/recommendationApi';
 import { ContractorRecommendationCard } from './ContractorRecommendationCard';
+import { AssignmentConfirmation } from './AssignmentConfirmation';
 
 interface RecommendationModalProps {
   open: boolean;
   job: JobDto | null;
   onClose: () => void;
-  onAssign?: (contractor: RankedContractorDto, job: JobDto) => void;
+  onAssignmentComplete?: (contractor: RankedContractorDto, job: JobDto) => void;
+  isAssigning?: boolean;
 }
 
 /**
@@ -32,8 +35,14 @@ export function RecommendationModal({
   open,
   job,
   onClose,
-  onAssign,
+  onAssignmentComplete,
+  isAssigning = false,
 }: RecommendationModalProps) {
+  // State for assignment confirmation dialog
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [selectedContractor, setSelectedContractor] =
+    useState<RankedContractorDto | null>(null);
+
   const recommendationRequest = buildRecommendationRequest(job);
 
   const { data: contractors, isLoading, error } = useRecommendations(
@@ -41,51 +50,77 @@ export function RecommendationModal({
     { enabled: open && job !== null }
   );
 
-  const handleAssign = (contractor: RankedContractorDto) => {
-    if (onAssign && job) {
-      onAssign(contractor, job);
+  // Handle assign button click - show confirmation dialog
+  const handleAssignClick = (contractor: RankedContractorDto) => {
+    setSelectedContractor(contractor);
+    setConfirmationOpen(true);
+  };
+
+  // Handle confirmation dialog cancel
+  const handleConfirmationCancel = () => {
+    setConfirmationOpen(false);
+    setSelectedContractor(null);
+  };
+
+  // Handle confirmed assignment - delegate to parent
+  const handleConfirmationConfirm = () => {
+    if (selectedContractor && job && onAssignmentComplete) {
+      onAssignmentComplete(selectedContractor, job);
+      // Keep confirmation open - parent will close both dialogs on success
     }
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      scroll="paper"
-    >
-      <DialogTitle>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Box>
-            <Typography variant="h6">
-              Find Contractor for {job?.formattedId}
-            </Typography>
-            {job && (
-              <Typography variant="body2" color="text.secondary">
-                {job.jobTypeName} - {formatDate(job.desiredDate)}
-                {job.desiredTime && ` at ${formatTime(job.desiredTime)}`}
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="md"
+        fullWidth
+        scroll="paper"
+      >
+        <DialogTitle>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Box>
+              <Typography variant="h6">
+                Find Contractor for {job?.formattedId}
               </Typography>
-            )}
+              {job && (
+                <Typography variant="body2" color="text.secondary">
+                  {job.jobTypeName} - {formatDate(job.desiredDate)}
+                  {job.desiredTime && ` at ${formatTime(job.desiredTime)}`}
+                </Typography>
+              )}
+            </Box>
+            <IconButton onClick={onClose} size="small">
+              <Close />
+            </IconButton>
           </Box>
-          <IconButton onClick={onClose} size="small">
-            <Close />
-          </IconButton>
-        </Box>
-      </DialogTitle>
+        </DialogTitle>
 
-      <DialogContent dividers>
-        {renderContent(contractors, isLoading, error, handleAssign)}
-      </DialogContent>
+        <DialogContent dividers>
+          {renderContent(contractors, isLoading, error, handleAssignClick)}
+        </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-      </DialogActions>
-    </Dialog>
+        <DialogActions>
+          <Button onClick={onClose}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Assignment Confirmation Dialog */}
+      <AssignmentConfirmation
+        open={confirmationOpen}
+        contractor={selectedContractor}
+        job={job}
+        onConfirm={handleConfirmationConfirm}
+        onCancel={handleConfirmationCancel}
+        isLoading={isAssigning}
+      />
+    </>
   );
 }
 

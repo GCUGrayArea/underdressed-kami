@@ -1,6 +1,7 @@
-import { Box, Typography, Paper, Divider, Stack } from '@mui/material';
+import { Box, Typography, Paper, Divider, Stack, Snackbar, Alert } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useJobs } from '../hooks/useJobs';
+import { useJobAssignment } from '../hooks/useJobAssignment';
 import { JobList } from '../components/jobs/JobList';
 import { RecommendationModal } from '../components/recommendations/RecommendationModal';
 import type { JobDto, RankedContractorDto } from '../types/dto';
@@ -21,6 +22,16 @@ export function Dashboard() {
   const [selectedJob, setSelectedJob] = useState<JobDto | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Notification state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>(
+    'success'
+  );
+
+  // Assignment mutation
+  const assignmentMutation = useJobAssignment();
+
   // Separate and sort jobs by status
   const { unassignedJobs, assignedJobsByDate } = useMemo(() => {
     return categorizeJobs(jobs);
@@ -38,14 +49,58 @@ export function Dashboard() {
     setSelectedJob(null);
   };
 
-  // Handle contractor assignment (placeholder for PR-025)
-  const handleAssignContractor = (
+  // Handle contractor assignment
+  const handleAssignContractor = async (
     contractor: RankedContractorDto,
     job: JobDto
   ) => {
-    // TODO: Implement in PR-025 (Job Assignment Flow)
-    console.log('Assign contractor', contractor, 'to job', job);
-    handleCloseModal();
+    try {
+      // Build scheduled start time from job's desired date and contractor's best slot
+      const scheduledStartTime = buildScheduledStartTime(
+        job.desiredDate,
+        contractor.bestAvailableSlot?.start || job.desiredTime || '09:00:00'
+      );
+
+      await assignmentMutation.mutateAsync({
+        jobId: job.id,
+        data: {
+          contractorId: contractor.contractorId,
+          scheduledStartTime,
+        },
+      });
+
+      // Success - show notification and close modal
+      showSuccessNotification(contractor.name, job.formattedId);
+      handleCloseModal();
+    } catch (error) {
+      // Error - show notification but keep modal open
+      showErrorNotification(error);
+    }
+  };
+
+  // Show success notification
+  const showSuccessNotification = (contractorName: string, jobId: string) => {
+    setSnackbarMessage(
+      `Successfully assigned ${contractorName} to ${jobId}`
+    );
+    setSnackbarSeverity('success');
+    setSnackbarOpen(true);
+  };
+
+  // Show error notification
+  const showErrorNotification = (error: unknown) => {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Failed to assign contractor. Please try again.';
+    setSnackbarMessage(message);
+    setSnackbarSeverity('error');
+    setSnackbarOpen(true);
+  };
+
+  // Handle snackbar close
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -90,8 +145,26 @@ export function Dashboard() {
         open={modalOpen}
         job={selectedJob}
         onClose={handleCloseModal}
-        onAssign={handleAssignContractor}
+        onAssignmentComplete={handleAssignContractor}
+        isAssigning={assignmentMutation.isPending}
       />
+
+      {/* Success/Error Notification */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
@@ -178,4 +251,20 @@ function renderAssignedJobsByDate(
       ))}
     </Stack>
   );
+}
+
+/**
+ * Build ISO datetime string from date and time components
+ */
+function buildScheduledStartTime(dateString: string, timeString: string): string {
+  // Parse date (YYYY-MM-DD)
+  const date = new Date(dateString);
+
+  // Parse time (HH:mm:ss)
+  const [hours, minutes, seconds = '00'] = timeString.split(':').map(Number);
+
+  // Combine into ISO datetime
+  date.setHours(hours, minutes, seconds, 0);
+
+  return date.toISOString();
 }
