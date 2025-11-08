@@ -726,14 +726,77 @@ Design with future migration to distributed message broker in mind (AWS SQS). Ke
 ---
 
 ### PR-016: SignalR Hub Implementation
-**Status:** New
-**Dependencies:** PR-015
+**Status:** Planning
+**Agent:** Pink
+**Dependencies:** PR-015 ✅
 **Priority:** High
 
 **Description:**
 Implement SignalR hub for real-time communication with dispatcher and contractor clients. Hub broadcasts domain events to connected clients.
 
-**Files (ESTIMATED - will be refined during Planning):**
+**Planning Notes (Pink):**
+
+**CONTEXT:**
+- PR-015 (Domain Event Infrastructure) is now complete ✅
+- Domain events are now properly set up with INotification interface
+- Event handlers (AuditLogEventHandler, JobAssignedEventHandler, etc.) are in place
+- MediatR pub/sub is working correctly
+- We need to bridge these domain events to SignalR for real-time frontend updates
+
+**ARCHITECTURE APPROACH:**
+1. **SignalR Hub** (SchedulingHub.cs):
+   - Thin hub with connection lifecycle methods (OnConnectedAsync, OnDisconnectedAsync)
+   - No business logic - purely messaging infrastructure
+   - Mounted at /hubs/scheduling
+   - Uses ISchedulingClient interface for strongly-typed client messages
+
+2. **Client Interface** (ISchedulingClient.cs):
+   - Defines strongly-typed methods for client-side handlers
+   - Methods: ReceiveJobAssigned, ReceiveScheduleUpdated, ReceiveContractorRated
+   - Ensures type safety between server broadcast and client consumption
+
+3. **Event→SignalR Bridge** (SignalRBroadcastEventHandler.cs):
+   - Implements INotificationHandler<JobAssignedEvent>
+   - Implements INotificationHandler<ScheduleUpdatedEvent>
+   - Implements INotificationHandler<ContractorRatedEvent>
+   - Injects IHubContext<SchedulingHub, ISchedulingClient>
+   - Converts domain events to SignalR client messages
+   - Broadcasts to all connected clients
+
+4. **Program.cs Configuration**:
+   - AddSignalR() in service registration
+   - MapHub<SchedulingHub>("/hubs/scheduling") in endpoint mapping
+   - CORS configuration to allow frontend origin (localhost:5173 for dev)
+
+**FILE LIST (Refined):**
+- src/backend/SmartScheduler.WebApi/Hubs/SchedulingHub.cs (create) - SignalR hub with connection lifecycle
+- src/backend/SmartScheduler.WebApi/Hubs/ISchedulingClient.cs (create) - Strongly-typed client interface
+- src/backend/SmartScheduler.Application/EventHandlers/SignalRBroadcastEventHandler.cs (create) - Domain event → SignalR bridge (handles JobAssigned, ScheduleUpdated, ContractorRated)
+- src/backend/SmartScheduler.WebApi/Program.cs (modify) - Add SignalR services, configure CORS, map hub endpoint
+- src/backend/SmartScheduler.WebApi/SmartScheduler.WebApi.csproj (verify) - Ensure Microsoft.AspNetCore.SignalR package (should be included in ASP.NET Core 8)
+
+**INTEGRATION POINTS:**
+- **Frontend:** PR-019 (SignalR Client Integration) already has the client-side hooks ready
+  - SignalRContext.tsx provides connection management
+  - useSignalREvent hook allows components to subscribe to events
+  - Once PR-016 is complete, frontend will receive real-time updates
+- **Backend:** Existing domain event handlers will automatically trigger SignalR broadcasts
+  - AssignContractorCommandHandler publishes JobAssignedEvent → SignalRBroadcastEventHandler → SchedulingHub → All clients
+
+**EDGE CASES TO HANDLE:**
+- Hub connection failures logged but don't block event processing
+- SignalR broadcast failures should not cause event handler to fail (fire-and-forget)
+- If no clients connected, events should still be processed (just no broadcast)
+- Connection lifecycle logging for debugging (who connected, when, from where)
+
+**TESTING APPROACH:**
+- Manual testing: Use browser dev tools to monitor SignalR connection
+- Test event flow: Create contractor → verify ScheduleUpdated broadcast
+- Test event flow: Assign job → verify JobAssigned broadcast
+- Verify CORS allows frontend connection (localhost:5173)
+- Check SignalR logs for connection/disconnection events
+
+**Files (Refined during Planning):**
 - src/backend/SmartScheduler.WebApi/Hubs/SchedulingHub.cs (create) - SignalR hub
 - src/backend/SmartScheduler.WebApi/Hubs/ISchedulingClient.cs (create) - Client interface
 - src/backend/SmartScheduler.Application/EventHandlers/SignalRBroadcastEventHandler.cs (create) - Event→SignalR bridge
@@ -743,15 +806,16 @@ Implement SignalR hub for real-time communication with dispatcher and contractor
 - [ ] SignalR hub mounted at /hubs/scheduling
 - [ ] JobAssigned events broadcast to all connected clients
 - [ ] ScheduleUpdated events broadcast to all connected clients
-- [ ] Clients receive strongly-typed messages (ReceiveJobAssigned, ReceiveScheduleUpdated)
-- [ ] Connection handling includes automatic reconnection logic
+- [ ] ContractorRated events broadcast to all connected clients
+- [ ] Clients receive strongly-typed messages (ReceiveJobAssigned, ReceiveScheduleUpdated, ReceiveContractorRated)
+- [ ] Connection handling includes automatic reconnection logic (client-side already implemented in PR-019)
 - [ ] CORS configured to allow frontend connections
 - [ ] Hub methods include connection lifecycle logging
+- [ ] SignalR broadcast failures don't cause event handler failures (fire-and-forget)
 
 **Notes:**
-Keep hub thin - just broadcasting, no business logic. Event handlers convert domain events to SignalR messages.
+Keep hub thin - just broadcasting, no business logic. Event handlers convert domain events to SignalR messages. Frontend integration already complete in PR-019, ready to receive these broadcasts.
 
----
 
 ## Block 8: Frontend Foundation (Depends on: Block 1)
 
