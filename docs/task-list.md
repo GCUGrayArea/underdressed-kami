@@ -660,8 +660,8 @@ Use React Router v6 with lazy loading for code splitting. Set up Material-UI wit
 ---
 
 ### PR-018: API Client and React Query Setup
-**Status:** Planning
-**Agent:** [Planning Agent]
+**Status:** In Progress
+**Agent:** Blonde
 **Dependencies:** PR-017 ✅
 **Priority:** High
 
