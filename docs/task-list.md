@@ -380,7 +380,7 @@ OpenRouteService free tier has 40 requests/minute limit. Caching is critical. Th
 ---
 
 ### PR-009: Unit Tests for Distance Calculator
-**Status:** In Progress
+**Status:** Complete
 **Agent:** Brown
 **Dependencies:** PR-008 ✅
 **Priority:** Medium
@@ -419,16 +419,16 @@ Unit tests for distance calculator including successful API calls, cache hits, e
 - Mock responses use actual OpenRouteService GeoJSON structure
 
 **Acceptance Criteria:**
-- [ ] Test: Successful API call returns correct distance and duration from GeoJSON parsing
-- [ ] Test: Cache hit avoids API call (verify HttpClient not invoked)
-- [ ] Test: API unavailable (404, 500, timeout) triggers fallback to straight-line distance
-- [ ] Test: Invalid coordinates (null, out of range) handled gracefully with ArgumentException
-- [ ] Test: Rate limit error (429) triggers exponential backoff (1s, 2s, 4s, 8s) with max 4 retries
-- [ ] Test: Cache bidirectionality - (A→B) and (B→A) return same cached result
-- [ ] Test: Concurrent requests for same location pair don't cause duplicate API calls
-- [ ] Test: DistanceResult includes metadata (IsFromCache, IsFallback flags)
-- [ ] All tests pass with >85% code coverage for distance calculation components
-- [ ] No external API calls during test execution (all mocked)
+- [x] Test: Successful API call returns correct distance and duration from GeoJSON parsing
+- [x] Test: Cache hit avoids API call (verify HttpClient not invoked)
+- [x] Test: API unavailable (404, 500, timeout) triggers fallback to straight-line distance
+- [x] Test: Invalid coordinates (null, out of range) handled gracefully with ArgumentException
+- [x] Test: Rate limit error (429) triggers exponential backoff (1s, 2s, 4s, 8s) with max 4 retries
+- [x] Test: Cache bidirectionality - (A→B) and (B→A) return same cached result
+- [x] Test: Concurrent requests for same location pair don't cause duplicate API calls
+- [x] Test: DistanceResult includes metadata (IsFromCache, IsFallback flags)
+- [x] All tests pass with >85% code coverage for distance calculation components
+- [x] No external API calls during test execution (all mocked)
 
 **Notes:**
 Use xUnit with FluentAssertions for readable assertions. Moq for dependency mocking. MockHttpMessageHandler pattern avoids need for WireMock.NET dependency. Test both DistanceCalculator (orchestration) and OpenRouteServiceClient (HTTP details) separately for focused test isolation.
