@@ -2,16 +2,16 @@
 
 This file tracks which agent identities are currently in use. Agents must claim an identity before starting work and release it when done.
 
-**Last Updated:** 2025-11-07T19:15:00Z (parallel deployment)
+**Last Updated:** 2025-11-08T01:45:00Z (planning agent deployment)
 
 ## Available Identities
 
 | Identity | Status | Last Commit | Current PR |
 |----------|--------|-------------|------------|
 | White    | Available | - | - |
-| Orange   | In Use | 2025-11-07T19:15:00Z | PR-015 |
-| Blonde   | In Use | 2025-11-07T19:15:00Z | PR-021 |
-| Pink     | Available | - | - |
+| Orange   | Available | - | - |
+| Blonde   | Available | - | - |
+| Pink     | In Use | 2025-11-08T01:45:00Z | Planning |
 | Blue     | Available | - | - |
 | Brown    | Available | - | - |
 
