@@ -12,6 +12,10 @@ const Contractors = lazy(() =>
   import('./pages/Contractors').then((module) => ({ default: module.Contractors }))
 );
 
+const ContractorForm = lazy(() =>
+  import('./pages/ContractorForm').then((module) => ({ default: module.ContractorForm }))
+);
+
 const Jobs = lazy(() =>
   import('./pages/Jobs').then((module) => ({ default: module.Jobs }))
 );
@@ -46,6 +50,14 @@ export const router = createBrowserRouter([
       {
         path: 'contractors',
         element: withSuspense(Contractors),
+      },
+      {
+        path: 'contractors/new',
+        element: withSuspense(ContractorForm),
+      },
+      {
+        path: 'contractors/:id',
+        element: withSuspense(ContractorForm),
       },
       {
         path: 'jobs',
