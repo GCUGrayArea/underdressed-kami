@@ -860,7 +860,7 @@ Connection should be singleton managed by context. Expose event subscription API
 ## Block 9: Frontend Features - Contractor Management (Depends on: Block 8, Block 6)
 
 ### PR-020: Contractor List Page
-**Status:** In Progress
+**Status:** Complete
 **Agent:** Pink
 **Dependencies:** PR-017 ✅, PR-018 ✅, PR-012 ✅
 **Priority:** High
@@ -868,23 +868,25 @@ Connection should be singleton managed by context. Expose event subscription API
 **Description:**
 Build contractor list page with search, filtering, and ability to navigate to create/edit contractor forms.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/frontend/src/pages/Contractors.tsx (modify) - Contractor list implementation
-- src/frontend/src/components/contractors/ContractorTable.tsx (create) - Table component
-- src/frontend/src/components/contractors/ContractorFilters.tsx (create) - Filter controls
-- src/frontend/src/components/contractors/ContractorSearch.tsx (create) - Search input
+**Files (Implemented):**
+- src/frontend/src/pages/Contractors.tsx (modified) - Full contractor list implementation with search, filters, and pagination
+- src/frontend/src/components/contractors/ContractorTable.tsx (created) - Material-UI table with pagination and row click navigation
+- src/frontend/src/components/contractors/ContractorFilters.tsx (created) - Filter controls for job type, rating range, and active status
+- src/frontend/src/components/contractors/ContractorSearch.tsx (created) - Debounced search input component
+- src/frontend/src/services/contractorApi.ts (created) - Contractor API service extending base ApiService
+- src/frontend/src/hooks/useContractors.ts (created) - React Query hooks for contractor CRUD operations
 
 **Acceptance Criteria:**
-- [ ] Displays contractors in table with name, type, rating, status
-- [ ] Search filters contractors by name
-- [ ] Filters by type, rating range, and active/inactive status
-- [ ] Clicking contractor row navigates to detail/edit page
-- [ ] "Add Contractor" button navigates to create form
-- [ ] Loading state while fetching data
-- [ ] Empty state when no contractors match filters
+- [x] Displays contractors in table with name, type, rating, status
+- [x] Search filters contractors by name (debounced 300ms, client-side filtering)
+- [x] Filters by type, rating range, and active/inactive status
+- [x] Clicking contractor row navigates to detail/edit page (/contractors/:id)
+- [x] "Add Contractor" button navigates to create form (/contractors/new)
+- [x] Loading state while fetching data (CircularProgress)
+- [x] Empty state when no contractors match filters
 
 **Notes:**
-Use Material-UI Table component with sorting. Debounce search input to avoid excessive API calls.
+Uses Material-UI Table component with pagination. Search is debounced at 300ms. Name search is client-side filtered (backend doesn't support name search yet). Integrates with React Query for caching and automatic refetching.
 
 ---
 
