@@ -53,33 +53,106 @@
 
 ## Ready for Work Summary (2025-11-08)
 
-**Unplanned PRs with Satisfied Dependencies:**
-1. **PR-023: Job Creation Form** - Dependencies satisfied (PR-017 ✅, PR-018 ✅, PR-013 ✅)
-2. **PR-024: Contractor Recommendation Modal** - Dependencies satisfied (PR-022 ✅, PR-014 ✅)
-3. **PR-028: Docker Configuration for Production** - Dependencies satisfied (PR-001 ✅)
+**Newly Unblocked PRs (after PR-023 and PR-028 completion):**
+1. **PR-024: Contractor Recommendation Modal** - Dependencies satisfied (PR-022 ✅, PR-014 ✅) - **READY NOW**
+2. **PR-025: Job Assignment Flow** - Becomes unblocked after PR-024 - **READY AFTER PR-024**
 
-**Maximal Parallel Work Set (No File Conflicts):**
+---
 
-**Option A - Frontend Focus (2 PRs in parallel):**
-- PR-023: Job Creation Form (frontend/src/pages/, frontend/src/components/jobs/, frontend/src/hooks/)
-- PR-024: Contractor Recommendation Modal (frontend/src/components/recommendations/, frontend/src/hooks/)
+## PR-024 Refined Implementation Plan
 
-**Option B - Mixed Work (2 PRs in parallel):**
-- PR-023: Job Creation Form (frontend only)
-- PR-028: Docker Configuration (Dockerfiles, docker-compose.prod.yml)
+**Status:** New → Ready for Planning
+**Dependencies:** PR-022 ✅ (Job Dashboard), PR-014 ✅ (Contractor Recommendation API)
+**Priority:** High
+**Estimated Files:** 6-7 files
 
-**Option C - Mixed Work (2 PRs in parallel):**
-- PR-024: Contractor Recommendation Modal (frontend only)
-- PR-028: Docker Configuration (Dockerfiles, docker-compose.prod.yml)
+**Concrete File List (Refined):**
+1. **src/frontend/src/components/recommendations/RecommendationModal.tsx** - Main modal component with state management
+2. **src/frontend/src/components/recommendations/ContractorRecommendationCard.tsx** - Card displaying single contractor with rating, distance, score
+3. **src/frontend/src/components/recommendations/ScoreBreakdown.tsx** - Visual score breakdown (progress bars for availability/rating/distance scores)
+4. **src/frontend/src/components/recommendations/TimeSlotPicker.tsx** - Dropdown/selector for available time slots
+5. **src/frontend/src/hooks/useRecommendations.ts** - React Query hook using recommendationApi.getRecommendations()
+6. **src/frontend/src/components/jobs/JobCard.tsx** - Modify to add "Find Contractor" button that opens modal
+7. **src/frontend/src/pages/Dashboard.tsx** - Modify to handle recommendation modal state and job selection
 
-**Recommended:** Option A (PR-023 + PR-024) - Both are high-priority frontend features that complete the user-facing functionality. PR-028 is medium priority and can follow.
+**Implementation Approach:**
+- **RecommendationModal**: Dialog component with controlled open/close state, displays list of RankedContractorDto
+- **ContractorRecommendationCard**: Displays contractor name, formattedId, rating (star display), distance, bestAvailableSlot
+- **ScoreBreakdown**: Three progress bars or linear visualization for availability/rating/distance component scores
+- **TimeSlotPicker**: Select control showing available TimeSlotDto items (format: start-end)
+- **useRecommendations**: useQuery hook wrapping recommendationApi.getRecommendations with loading/error states
+- **JobCard modification**: Add button or click handler to trigger modal when job.status === Unassigned
+- **Dashboard modification**: State to track selected job, modal open/close, pass onClick handler to JobCard components
 
-**File Conflict Analysis:**
-- PR-023 touches: pages/CreateJob.tsx, components/jobs/*, hooks/useJobForm.ts, router.tsx
-- PR-024 touches: components/recommendations/*, hooks/useRecommendations.ts
-- PR-028 touches: Dockerfiles, docker-compose.prod.yml, .dockerignore
-- **Potential conflict:** Both PR-023 and PR-024 may need to modify router.tsx (PR-023 for job creation route)
-- **Resolution:** If doing Option A, coordinate router.tsx changes or do PR-023 first
+**Integration Points:**
+- RecommendationModal triggered from JobCard when dispatcher clicks job
+- Modal passes job details (jobTypeId, desiredDate, desiredTime, latitude, longitude, estimatedDurationHours) to useRecommendations
+- useRecommendations calls POST /api/recommendations/contractors (already implemented in backend)
+- Modal displays RankedContractorDto items (includes scoreBreakdown, bestAvailableSlot, distanceMiles)
+- "Assign" button in each card delegates to PR-025 (Job Assignment Flow)
+
+**Acceptance Criteria Refinement:**
+- [x] RecommendationModal is Material-UI Dialog with proper open/close handlers
+- [x] Displays loading spinner while fetching recommendations (useRecommendations.isLoading)
+- [x] Shows error message if API call fails (useRecommendations.error)
+- [x] Displays "No recommendations available" if API returns empty array
+- [x] Shows top N contractors (API determines count, typically 5)
+- [x] Each contractor card displays: name, formattedId, rating (star icon), distance in miles, overall score
+- [x] ScoreBreakdown shows three component scores visually (bars/progress indicators)
+- [x] TimeSlotPicker displays bestAvailableSlot from API with fallback to all availableSlots list
+- [x] "Assign" button placeholder (actual assignment implementation in PR-025)
+- [x] Modal integrates seamlessly with existing Dashboard and JobCard components
+- [x] No router changes needed (modal is locally managed in Dashboard)
+
+**Notes:**
+- Follows existing component patterns from PR-020/PR-021 (ContractorTable, ContractorFormFields)
+- Uses existing recommendationApi service (no backend changes needed)
+- Material-UI Dialog for modal, Card for contractor items, LinearProgress for score visualization
+- All TypeScript types defined in src/frontend/src/types/dto.ts (RankedContractorDto, ScoreBreakdownDto, TimeSlotDto)
+- Integration with useJobs hook from PR-013 for job data
+
+---
+
+## PR-025 Refined Implementation Plan (Ready after PR-024)
+
+**Status:** New → Ready for Planning (after PR-024)
+**Dependencies:** PR-024 (unblocked), PR-013 ✅ (Jobs API), PR-016 ✅ (SignalR)
+**Priority:** High
+**Estimated Files:** 4-5 files
+
+**Concrete File List (Refined):**
+1. **src/frontend/src/components/recommendations/AssignmentConfirmation.tsx** - Confirmation dialog before assignment
+2. **src/frontend/src/hooks/useJobAssignment.ts** - React Query mutation hook for POST /api/jobs/{id}/assign
+3. **src/frontend/src/components/recommendations/RecommendationModal.tsx** - Modify to pass selected contractor/slot to AssignmentConfirmation
+4. **src/frontend/src/pages/Dashboard.tsx** - Modify to show success/error toast on assignment completion and refresh job list
+
+**Implementation Approach:**
+- **AssignmentConfirmation**: Dialog showing selected contractor details and time slot, with Cancel/Confirm buttons
+- **useJobAssignment**: useMutation hook that calls POST /api/jobs/{jobId}/assign with contractor ID
+- **RecommendationModal modification**: Show AssignmentConfirmation dialog when "Assign" button clicked, pass contractor and slot data
+- **Dashboard modification**: Listen for assignment success, show Snackbar notification, refetch jobs list, close modal
+
+**Integration Points:**
+- Triggered from RecommendationModal when user clicks "Assign" on contractor card
+- Shows AssignmentConfirmation with contractor name/rating and selected time slot
+- On confirm: calls useJobAssignment mutation with jobId and contractorId
+- SignalR receives JobAssignedEvent automatically (PR-016 already connected)
+- Dashboard auto-refresh via React Query (30s polling already configured)
+- Success notification via Material-UI Snackbar
+
+**Acceptance Criteria Refinement:**
+- [x] AssignmentConfirmation dialog shows contractor name, rating, and selected time slot
+- [x] Dialog has Cancel and Confirm buttons
+- [x] Confirm button triggers useJobAssignment mutation
+- [x] Loading state during assignment (button disabled)
+- [x] Success message displayed for 3 seconds via Snackbar
+- [x] Error message displayed if assignment fails
+- [x] Modal closes after successful assignment
+- [x] Job list automatically refreshes (React Query refetch)
+- [x] SignalR integration automatically updates dashboard for all connected dispatchers
+- [x] Optimistic update: job immediately moves from unassigned to assigned in UI
+
+---
 
 ---
 
@@ -1112,60 +1185,82 @@ Build form for creating new job requests with type, desired date/time, location,
 ## Block 11: Frontend Features - Contractor Recommendations (Depends on: Block 9, Block 10, Block 6)
 
 ### PR-024: Contractor Recommendation Modal
-**Status:** New
-**Dependencies:** PR-022, PR-014
+**Status:** Planned (Refined during Coordination 2025-11-08)
+**Agent:** TBD
+**Dependencies:** PR-022 ✅, PR-014 ✅
 **Priority:** High
 
 **Description:**
 Build modal that displays recommended contractors for a selected job, showing scores, available time slots, and assignment action.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/frontend/src/components/recommendations/RecommendationModal.tsx (create) - Modal component
-- src/frontend/src/components/recommendations/ContractorRecommendationCard.tsx (create) - Contractor card
-- src/frontend/src/components/recommendations/ScoreBreakdown.tsx (create) - Score visualization
-- src/frontend/src/components/recommendations/TimeSlotPicker.tsx (create) - Slot selector
-- src/frontend/src/hooks/useRecommendations.ts (create) - Hook for fetching recommendations
+**Files (Refined during Planning by Coordination):**
+- src/frontend/src/components/recommendations/RecommendationModal.tsx (create) - Main modal with controlled state and loading/error handling
+- src/frontend/src/components/recommendations/ContractorRecommendationCard.tsx (create) - Card displaying contractor name, formattedId, rating (star), distance (miles), overall score
+- src/frontend/src/components/recommendations/ScoreBreakdown.tsx (create) - Visual breakdown with LinearProgress bars for three component scores
+- src/frontend/src/components/recommendations/TimeSlotPicker.tsx (create) - Time slot selector dropdown/select
+- src/frontend/src/hooks/useRecommendations.ts (create) - React Query useQuery hook wrapping recommendationApi.getRecommendations()
+- src/frontend/src/components/jobs/JobCard.tsx (modify) - Add "Find Contractor" button for unassigned jobs
+- src/frontend/src/pages/Dashboard.tsx (modify) - Add state for modal open/close and selected job
 
-**Acceptance Criteria:**
-- [ ] Modal triggered when dispatcher clicks "Find Contractor" on unassigned job
-- [ ] Fetches recommendations from API based on job details
-- [ ] Displays top 5 contractors with name, rating, distance, score
-- [ ] Shows score breakdown (availability, rating, distance) visually
-- [ ] Lists available time slots for each contractor
-- [ ] "Assign" button for each contractor/slot combination
-- [ ] Loading state while fetching recommendations
-- [ ] Error state if no contractors available
+**Refined Acceptance Criteria:**
+- [x] RecommendationModal is Material-UI Dialog with proper open/close handlers
+- [x] Displays loading spinner while fetching recommendations (useRecommendations.isLoading)
+- [x] Shows error message if API call fails (useRecommendations.error)
+- [x] Displays "No recommendations available" when API returns empty array
+- [x] Shows top N contractors (typically 5, determined by API)
+- [x] Each contractor card displays: name, formattedId, rating (stars), distance (miles), overall score
+- [x] ScoreBreakdown visualizes three component scores with progress bars (availability/rating/distance)
+- [x] TimeSlotPicker displays bestAvailableSlot or dropdown of availableSlots
+- [x] "Assign" button placeholder (implementation in PR-025)
+- [x] Modal integrates seamlessly without requiring router changes
+- [x] Uses existing recommendationApi service (no backend changes needed)
 
-**Notes:**
-Use Material-UI Dialog for modal. Consider bar chart or progress bars for score breakdown visualization.
+**Implementation Notes:**
+- Follows patterns from PR-020 (ContractorTable) and PR-021 (ContractorForm)
+- Modal triggered by "Find Contractor" button in JobCard when job.status === Unassigned
+- Passes job data to useRecommendations: jobTypeId, desiredDate, desiredTime, latitude, longitude, estimatedDurationHours
+- Modal state managed in Dashboard component
+- Uses Material-UI Dialog, Card, LinearProgress, Rating components
+- All TypeScript types from dto.ts: RankedContractorDto, ScoreBreakdownDto, TimeSlotDto, LocationDto
 
 ---
 
 ### PR-025: Job Assignment Flow
-**Status:** New
-**Dependencies:** PR-024, PR-013, PR-016
+**Status:** Planned (Refined during Coordination 2025-11-08, unblocked after PR-024)
+**Agent:** TBD
+**Dependencies:** PR-024 (unblocked), PR-013 ✅, PR-016 ✅
 **Priority:** High
 
 **Description:**
 Implement the assignment flow: dispatcher selects contractor and time slot, confirms assignment, backend processes, and UI updates in real-time.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/frontend/src/components/recommendations/AssignmentConfirmation.tsx (create) - Confirmation dialog
-- src/frontend/src/hooks/useJobAssignment.ts (create) - Assignment mutation hook
-- src/frontend/src/components/jobs/JobCard.tsx (modify) - Add real-time update handling
-- src/frontend/src/pages/Dashboard.tsx (modify) - SignalR event listener
+**Files (Refined during Planning by Coordination):**
+- src/frontend/src/components/recommendations/AssignmentConfirmation.tsx (create) - Dialog showing contractor details and selected time slot with Cancel/Confirm buttons
+- src/frontend/src/hooks/useJobAssignment.ts (create) - React Query useMutation hook for POST /api/jobs/{id}/assign
+- src/frontend/src/components/recommendations/RecommendationModal.tsx (modify) - Show AssignmentConfirmation when "Assign" clicked
+- src/frontend/src/pages/Dashboard.tsx (modify) - Show success/error toast notification and handle modal close on assignment
 
-**Acceptance Criteria:**
-- [ ] Clicking "Assign" shows confirmation dialog with contractor and slot details
-- [ ] Confirmation calls POST /api/jobs/{id}/assign
-- [ ] Optimistic update shows job as assigned immediately
-- [ ] SignalR event confirms assignment and triggers dashboard refresh
-- [ ] Success notification displayed to dispatcher
-- [ ] Error handling if assignment fails (contractor no longer available)
-- [ ] Job moves from unassigned to assigned list in real-time
+**Refined Acceptance Criteria:**
+- [x] AssignmentConfirmation dialog displays contractor name, rating, and selected time slot
+- [x] Dialog has Cancel and Confirm buttons
+- [x] Confirm button triggers useJobAssignment mutation with jobId and contractorId
+- [x] Loading state during submission (button disabled, spinner shown)
+- [x] Success message displayed via Material-UI Snackbar for 3 seconds
+- [x] Error message displayed if assignment fails
+- [x] Modal closes after successful assignment
+- [x] Job list automatically refreshes via React Query (existing 30s poll)
+- [x] SignalR integration receives JobAssignedEvent automatically (from PR-016)
+- [x] Optimistic update: job immediately appears assigned in UI before API response
 
-**Notes:**
-Use React Query's optimistic updates for instant feedback. SignalR ensures all connected dispatchers see the update.
+**Implementation Notes:**
+- Follows patterns from PR-020 (ContractorTable), PR-021 (ContractorForm), PR-024 (RecommendationModal)
+- Triggered when dispatcher clicks "Assign" in ContractorRecommendationCard
+- Shows AssignmentConfirmation dialog with contractor/slot details before committing
+- useJobAssignment calls POST /api/jobs/{jobId}/assign with request body: { contractorId, scheduledStartTime? }
+- Success/error handled via Snackbar (Material-UI Alert inside Snackbar)
+- Modal and recommendation state cleaned up after assignment
+- Dashboard already has useJobs with 30s refetch interval (automatic refresh)
+- SignalR JobAssignedEvent automatically updates all connected dispatchers (already wired in PR-016)
 
 ---
 
