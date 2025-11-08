@@ -584,7 +584,7 @@ Use [ApiController] attribute for automatic model validation. Return problem det
 ---
 
 ### PR-013: Job Management API Endpoints
-**Status:** Planning
+**Status:** Complete
 **Agent:** Brown
 **Dependencies:** PR-005 ✅
 **Priority:** High
@@ -610,15 +610,15 @@ Implement REST API endpoints for job management: POST /api/jobs, GET /api/jobs, 
 - Availability validation deferred to PR-006 integration (not in current scope)
 
 **Acceptance Criteria:**
-- [ ] POST /api/jobs creates job and returns 201 Created with Location header
-- [ ] GET /api/jobs returns jobs filtered by optional status query parameter
-- [ ] GET /api/jobs/{id} returns job with contractor details if assigned or 404
-- [ ] PUT /api/jobs/{id} updates job details and returns 200 OK or 404
-- [ ] POST /api/jobs/{id}/assign assigns contractor to job and returns 200 OK or 404/400
-- [ ] Assignment validates contractor existence and job type match (existing handler)
-- [ ] All endpoints return appropriate HTTP status codes
-- [ ] Controller follows thin controller pattern (no business logic)
-- [ ] Domain events trigger for SignalR (already in command handlers)
+- [x] POST /api/jobs creates job and returns 201 Created with Location header
+- [x] GET /api/jobs returns jobs filtered by optional status query parameter
+- [x] GET /api/jobs/{id} returns job with contractor details if assigned or 404
+- [x] PUT /api/jobs/{id} updates job details and returns 200 OK or 404
+- [x] POST /api/jobs/{id}/assign assigns contractor to job and returns 200 OK or 404/400
+- [x] Assignment validates contractor existence and job type match (existing handler)
+- [x] All endpoints return appropriate HTTP status codes
+- [x] Controller follows thin controller pattern (no business logic)
+- [x] Domain events trigger for SignalR (already in command handlers)
 
 **Notes:**
 - Availability validation mentioned in original acceptance criteria will be enhanced when PR-006 (Availability Engine) is integrated
@@ -726,7 +726,7 @@ Design with future migration to distributed message broker in mind (AWS SQS). Ke
 ---
 
 ### PR-016: SignalR Hub Implementation
-**Status:** Planning
+**Status:** Complete
 **Agent:** Pink
 **Dependencies:** PR-015 ✅
 **Priority:** High
@@ -803,15 +803,15 @@ Implement SignalR hub for real-time communication with dispatcher and contractor
 - src/backend/SmartScheduler.WebApi/Program.cs (modify) - Configure SignalR services
 
 **Acceptance Criteria:**
-- [ ] SignalR hub mounted at /hubs/scheduling
-- [ ] JobAssigned events broadcast to all connected clients
-- [ ] ScheduleUpdated events broadcast to all connected clients
-- [ ] ContractorRated events broadcast to all connected clients
-- [ ] Clients receive strongly-typed messages (ReceiveJobAssigned, ReceiveScheduleUpdated, ReceiveContractorRated)
-- [ ] Connection handling includes automatic reconnection logic (client-side already implemented in PR-019)
-- [ ] CORS configured to allow frontend connections
-- [ ] Hub methods include connection lifecycle logging
-- [ ] SignalR broadcast failures don't cause event handler failures (fire-and-forget)
+- [x] SignalR hub mounted at /hubs/scheduling
+- [x] JobAssigned events broadcast to all connected clients
+- [x] ScheduleUpdated events broadcast to all connected clients
+- [x] ContractorRated events broadcast to all connected clients
+- [x] Clients receive strongly-typed messages (ReceiveJobAssigned, ReceiveScheduleUpdated, ReceiveContractorRated)
+- [x] Connection handling includes automatic reconnection logic (client-side already implemented in PR-019)
+- [x] CORS configured to allow frontend connections
+- [x] Hub methods include connection lifecycle logging
+- [x] SignalR broadcast failures don't cause event handler failures (fire-and-forget)
 
 **Notes:**
 Keep hub thin - just broadcasting, no business logic. Event handlers convert domain events to SignalR messages. Frontend integration already complete in PR-019, ready to receive these broadcasts.
