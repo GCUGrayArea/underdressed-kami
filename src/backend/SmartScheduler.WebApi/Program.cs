@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartScheduler.Domain.Interfaces;
 using SmartScheduler.Domain.Services;
+using SmartScheduler.Infrastructure.ExternalServices;
 using SmartScheduler.Infrastructure.Persistence;
 using SmartScheduler.Infrastructure.Persistence.Repositories;
 
@@ -17,6 +18,34 @@ builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
 
 // Register domain services
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
+
+// Register memory cache for distance caching
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 10000; // Limit to 10,000 cache entries (~1MB)
+});
+
+// Register distance calculation services
+var apiKey = builder.Configuration["OPENROUTESERVICE_API_KEY"]
+    ?? throw new InvalidOperationException("OPENROUTESERVICE_API_KEY not configured");
+
+builder.Services.AddHttpClient<OpenRouteServiceClient>()
+    .ConfigureHttpClient(client =>
+    {
+        client.BaseAddress = new Uri("https://api.openrouteservice.org");
+        client.Timeout = TimeSpan.FromSeconds(10);
+    });
+
+builder.Services.AddSingleton(sp =>
+{
+    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient(nameof(OpenRouteServiceClient));
+    var logger = sp.GetRequiredService<ILogger<OpenRouteServiceClient>>();
+    return new OpenRouteServiceClient(httpClient, logger, apiKey);
+});
+
+builder.Services.AddSingleton<DistanceCache>();
+builder.Services.AddScoped<IDistanceCalculator, DistanceCalculator>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
