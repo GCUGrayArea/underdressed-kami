@@ -283,8 +283,8 @@ Use xUnit with FluentAssertions for readable test assertions. Mock repository to
 ## Block 4: Distance & Mapping Integration (Depends on: Block 1)
 
 ### PR-008: OpenRouteService Integration
-**Status:** Planning
-**Agent:** Magenta
+**Status:** In Progress
+**Agent:** Orange
 **Dependencies:** PR-001 ✅
 **Priority:** High
 
