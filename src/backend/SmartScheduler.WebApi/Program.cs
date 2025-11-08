@@ -15,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IContractorRepository, ContractorRepository>();
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
+builder.Services.AddScoped<IDomainEventLogRepository, DomainEventLogRepository>();
 
 // Register domain services
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();

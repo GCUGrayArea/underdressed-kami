@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Contractor> Contractors => Set<Contractor>();
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<WeeklySchedule> WeeklySchedules => Set<WeeklySchedule>();
+    public DbSet<DomainEventLog> DomainEventLogs => Set<DomainEventLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,6 +30,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ContractorConfiguration());
         modelBuilder.ApplyConfiguration(new JobConfiguration());
         modelBuilder.ApplyConfiguration(new WeeklyScheduleConfiguration());
+        modelBuilder.ApplyConfiguration(new DomainEventLogConfiguration());
 
         // Apply seed data
         JobTypeSeed.Seed(modelBuilder);
