@@ -8,12 +8,12 @@ This file tracks which agent identities are currently in use. Agents must claim 
 
 | Identity | Status | Last Commit | Current PR |
 |----------|--------|-------------|------------|
-| White    | In Use | 2025-11-07 | PR-007 |
-| Orange   | In Use | 2025-11-07 | PR-008 |
-| Blonde   | In Use | 2025-11-07 | PR-018 |
-| Pink     | Available | - | - |
-| Blue     | Available | - | - |
-| Brown    | Available | - | - |
+| White    | Available | - | - |
+| Orange   | Available | - | - |
+| Blonde   | Available | - | - |
+| Pink     | In Use | 2025-11-07 | PR-012 |
+| Blue     | In Use | 2025-11-07 | PR-019 |
+| Brown    | In Use | 2025-11-07 | Planning |
 
 ## Special Identities
 
