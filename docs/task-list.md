@@ -251,7 +251,7 @@ Implement the availability engine that calculates open time slots for contractor
 **Notes:**
 Travel time buffer will be deferred to PR-008 (Distance calculation integration). This PR focuses on pure time-based availability. All times assumed in consistent time zone (business local time).
 ### PR-007: Unit Tests for Availability Engine
-**Status:** In Progress
+**Status:** Complete
 **Agent:** White
 **Dependencies:** PR-006 ✅
 **Priority:** High
@@ -259,21 +259,21 @@ Travel time buffer will be deferred to PR-008 (Distance calculation integration)
 **Description:**
 Comprehensive unit tests for availability engine covering various scenarios: normal availability, no availability, edge cases, boundary conditions. Tests validate the AvailabilityService domain logic, TimeSlot value object behavior, and edge case handling.
 
-**Files (Refined during Planning):**
-- src/backend/SmartScheduler.Tests/SmartScheduler.Tests.csproj (create) - xUnit test project with FluentAssertions, Moq, Coverlet
-- src/backend/SmartScheduler.Tests/Domain/Services/AvailabilityServiceTests.cs (create) - Comprehensive test suite for AvailabilityService
-- src/backend/SmartScheduler.Tests/Domain/ValueObjects/TimeSlotTests.cs (create) - Test suite for TimeSlot value object
-- src/backend/SmartScheduler.Tests/TestHelpers/TestDataBuilder.cs (create) - Builder pattern for test data (WeeklySchedule, Job entities)
-- src/backend/SmartScheduler.sln (modify) - Add test project to solution
+**Files (Implemented):**
+- src/backend/SmartScheduler.Tests/SmartScheduler.Tests.csproj (created) - xUnit test project with FluentAssertions, Moq, Coverlet
+- src/backend/SmartScheduler.Tests/Domain/Services/AvailabilityServiceTests.cs (created) - Comprehensive test suite for AvailabilityService with 22 tests
+- src/backend/SmartScheduler.Tests/Domain/ValueObjects/TimeSlotTests.cs (created) - Test suite for TimeSlot value object with 18 tests
+- src/backend/SmartScheduler.Tests/TestHelpers/TestDataBuilder.cs (created) - Builder pattern for test data (WeeklySchedule, Job entities)
+- src/backend/SmartScheduler.sln (modified) - Added test project to solution
 
 **Acceptance Criteria:**
-- [ ] Test: Contractor with no existing jobs shows full working hours as available
-- [ ] Test: Contractor with back-to-back jobs shows no availability
-- [ ] Test: Contractor with gap between jobs shows correct available slot
-- [ ] Test: Contractor not working on target date returns empty availability
-- [ ] Test: Job duration longer than gaps excludes those gaps
-- [ ] Test: Boundary condition at start/end of working hours handled correctly
-- [ ] All tests pass with >80% code coverage for AvailabilityService
+- [x] Test: Contractor with no existing jobs shows full working hours as available
+- [x] Test: Contractor with back-to-back jobs shows no availability
+- [x] Test: Contractor with gap between jobs shows correct available slot
+- [x] Test: Contractor not working on target date returns empty availability
+- [x] Test: Job duration longer than gaps excludes those gaps
+- [x] Test: Boundary condition at start/end of working hours handled correctly
+- [x] All tests pass with >80% code coverage for AvailabilityService (100% line coverage, 96.87% branch coverage achieved)
 
 **Notes:**
 Use xUnit with FluentAssertions for readable test assertions. Mock repository to return test data.
