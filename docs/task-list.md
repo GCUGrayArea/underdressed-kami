@@ -660,7 +660,7 @@ Use React Router v6 with lazy loading for code splitting. Set up Material-UI wit
 ---
 
 ### PR-018: API Client and React Query Setup
-**Status:** In Progress
+**Status:** Complete
 **Agent:** Blonde
 **Dependencies:** PR-017 ✅
 **Priority:** High
@@ -681,12 +681,12 @@ Set up Axios HTTP client with interceptors and React Query (TanStack Query) for 
 - src/frontend/package.json (modify) - Already has @tanstack/react-query and axios
 
 **Acceptance Criteria:**
-- [ ] Axios client configured with backend base URL from environment
-- [ ] Request interceptor adds correlation ID for logging
-- [ ] Response interceptor handles errors consistently
-- [ ] React Query provider wraps app with proper defaults
-- [ ] TypeScript types defined for all API request/response shapes
-- [ ] API methods use React Query hooks (useQuery, useMutation)
+- [x] Axios client configured with backend base URL from environment
+- [x] Request interceptor adds correlation ID for logging
+- [x] Response interceptor handles errors consistently
+- [x] React Query provider wraps app with proper defaults
+- [x] TypeScript types defined for all API request/response shapes
+- [x] API methods use React Query hooks (useQuery, useMutation)
 
 **Notes:**
 Use React Query for automatic caching, background refetching, and optimistic updates. Define API types matching backend DTOs.
