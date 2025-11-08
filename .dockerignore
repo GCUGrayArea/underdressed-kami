@@ -1,0 +1,61 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+LICENSE
+
+# CI/CD
+.github/
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backend specific
+**/bin/
+**/obj/
+**/TestResults/
+**/.vs/
+**/*.user
+**/*.suo
+**/appsettings.Development.json
+
+# Frontend specific
+**/node_modules/
+**/dist/
+**/build/
+**/.vite/
+**/coverage/
+
+# Test files
+**/tests/
+**/*.Tests/
+**/*.Test/
+**/__tests__/
+**/*.test.*
+**/*.spec.*
+
+# Docker files
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile
+.dockerignore

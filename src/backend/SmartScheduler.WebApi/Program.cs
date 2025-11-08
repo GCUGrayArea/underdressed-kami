@@ -118,6 +118,11 @@ app.MapControllers();
 // Map SignalR hub
 app.MapHub<SmartScheduler.WebApi.Hubs.SchedulingHub>("/hubs/scheduling");
 
+// Health check endpoint for container health monitoring
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
+    .WithName("HealthCheck")
+    .WithOpenApi();
+
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
