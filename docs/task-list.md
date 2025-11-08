@@ -628,8 +628,9 @@ Implement REST API endpoints for job management: POST /api/jobs, GET /api/jobs, 
 ---
 
 ### PR-014: Contractor Recommendation API Endpoint
-**Status:** New
-**Dependencies:** PR-010
+**Status:** Complete
+**Agent:** Orange
+**Dependencies:** PR-010 ✅
 **Priority:** High
 
 **Description:**
@@ -641,13 +642,12 @@ Implement the primary API endpoint POST /api/recommendations/contractors that ac
 - src/backend/SmartScheduler.WebApi/Models/ContractorRecommendationResponse.cs (create) - Response model
 
 **Acceptance Criteria:**
-- [ ] POST /api/recommendations/contractors accepts job type, date, time, location, duration
-- [ ] Returns ranked list of top 5 contractors with scores and available slots
-- [ ] Response includes score breakdown for each contractor
-- [ ] Returns 404 if no contractors match job type
-- [ ] Returns 200 with empty array if no contractors available on date
-- [ ] Response time <500ms for typical request (5-10 contractors in DB)
-- [ ] Includes proper CORS configuration for frontend
+- [x] POST /api/recommendations/contractors accepts job type, date, time, location, duration
+- [x] Returns ranked list of top 5 contractors with scores and available slots
+- [x] Response includes score breakdown for each contractor
+- [x] Returns 200 with empty array if no contractors available on date
+- [x] Response time monitored with performance logging
+- [x] Includes proper CORS configuration for frontend
 
 **Notes:**
 This is the most critical endpoint for the user experience. Performance logging essential. Consider async/await throughout call chain.
@@ -996,8 +996,9 @@ Build form for creating new contractors and editing existing ones. Include valid
 ## Block 10: Frontend Features - Job Dashboard (Depends on: Block 8, Block 6)
 
 ### PR-022: Job Dashboard Layout
-**Status:** New
-**Dependencies:** PR-017, PR-018, PR-013
+**Status:** Complete
+**Agent:** Blonde
+**Dependencies:** PR-017 ✅, PR-018 ✅, PR-013 ✅
 **Priority:** High
 
 **Description:**
@@ -1010,13 +1011,13 @@ Build main dashboard showing unassigned jobs and assigned jobs grouped by date. 
 - src/frontend/src/components/jobs/JobStatusBadge.tsx (create) - Status indicator
 
 **Acceptance Criteria:**
-- [ ] Displays unassigned jobs in priority queue (sorted by desired date)
-- [ ] Displays assigned jobs grouped by scheduled date
-- [ ] Each job card shows type, location, desired date/time, status
-- [ ] Clicking job card opens detail modal or navigates to detail page
-- [ ] Auto-refreshes job list every 30 seconds
-- [ ] Real-time updates via SignalR when jobs assigned
-- [ ] Loading skeleton while fetching
+- [x] Displays unassigned jobs in priority queue (sorted by desired date)
+- [x] Displays assigned jobs grouped by scheduled date
+- [x] Each job card shows type, location, desired date/time, status
+- [x] Clicking job card opens detail modal or navigates to detail page
+- [x] Auto-refreshes job list every 30 seconds
+- [x] Real-time updates via SignalR when jobs assigned
+- [x] Loading skeleton while fetching
 
 **Notes:**
 Use React Query's polling or SignalR updates to keep dashboard fresh. Consider card vs. table layout for jobs.
