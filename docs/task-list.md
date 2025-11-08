@@ -251,8 +251,8 @@ Implement the availability engine that calculates open time slots for contractor
 **Notes:**
 Travel time buffer will be deferred to PR-008 (Distance calculation integration). This PR focuses on pure time-based availability. All times assumed in consistent time zone (business local time).
 ### PR-007: Unit Tests for Availability Engine
-**Status:** Planning
-**Agent:** [Planning Agent]
+**Status:** In Progress
+**Agent:** White
 **Dependencies:** PR-006 ✅
 **Priority:** High
 
