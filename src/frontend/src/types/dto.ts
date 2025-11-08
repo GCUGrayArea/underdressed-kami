@@ -121,3 +121,28 @@ export interface JobTypeDto {
   name: string;
   description?: string;
 }
+
+/**
+ * Score breakdown for contractor ranking
+ */
+export interface ScoreBreakdownDto {
+  availabilityScore: number; // 0.0-1.0
+  ratingScore: number; // 0.0-1.0
+  distanceScore: number; // 0.0-1.0
+  overallScore: number; // 0.0-1.0
+}
+
+/**
+ * Ranked contractor recommendation with score and availability
+ */
+export interface RankedContractorDto {
+  contractorId: string;
+  formattedId: string; // e.g., "CTR-001"
+  name: string;
+  jobType: string;
+  rating: number; // 0.0-5.0
+  baseLocation: LocationDto;
+  distanceMiles: number;
+  bestAvailableSlot?: TimeSlotDto;
+  scoreBreakdown: ScoreBreakdownDto;
+}

@@ -6,13 +6,20 @@ interface JobListProps {
   jobs: JobDto[];
   loading?: boolean;
   onJobClick?: (job: JobDto) => void;
+  onFindContractor?: (job: JobDto) => void;
   emptyMessage?: string;
 }
 
 /**
  * Job list component that renders a grid of job cards
  */
-export function JobList({ jobs, loading = false, onJobClick, emptyMessage }: JobListProps) {
+export function JobList({
+  jobs,
+  loading = false,
+  onJobClick,
+  onFindContractor,
+  emptyMessage,
+}: JobListProps) {
   if (loading) {
     return <LoadingSkeleton />;
   }
@@ -34,7 +41,12 @@ export function JobList({ jobs, loading = false, onJobClick, emptyMessage }: Job
       }}
     >
       {jobs.map((job) => (
-        <JobCard key={job.id} job={job} onClick={onJobClick} />
+        <JobCard
+          key={job.id}
+          job={job}
+          onClick={onJobClick}
+          onFindContractor={onFindContractor}
+        />
       ))}
     </Box>
   );

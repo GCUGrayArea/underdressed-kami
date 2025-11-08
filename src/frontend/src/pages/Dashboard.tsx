@@ -1,8 +1,9 @@
 import { Box, Typography, Paper, Divider, Stack } from '@mui/material';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useJobs } from '../hooks/useJobs';
 import { JobList } from '../components/jobs/JobList';
-import type { JobDto } from '../types/dto';
+import { RecommendationModal } from '../components/recommendations/RecommendationModal';
+import type { JobDto, RankedContractorDto } from '../types/dto';
 import { JobStatus } from '../types/dto';
 
 /**
@@ -16,10 +17,36 @@ export function Dashboard() {
 
   const jobs = data?.items || [];
 
+  // Modal state
+  const [selectedJob, setSelectedJob] = useState<JobDto | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
   // Separate and sort jobs by status
   const { unassignedJobs, assignedJobsByDate } = useMemo(() => {
     return categorizeJobs(jobs);
   }, [jobs]);
+
+  // Handle Find Contractor button click
+  const handleFindContractor = (job: JobDto) => {
+    setSelectedJob(job);
+    setModalOpen(true);
+  };
+
+  // Handle modal close
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedJob(null);
+  };
+
+  // Handle contractor assignment (placeholder for PR-025)
+  const handleAssignContractor = (
+    contractor: RankedContractorDto,
+    job: JobDto
+  ) => {
+    // TODO: Implement in PR-025 (Job Assignment Flow)
+    console.log('Assign contractor', contractor, 'to job', job);
+    handleCloseModal();
+  };
 
   return (
     <Box>
@@ -41,6 +68,7 @@ export function Dashboard() {
             jobs={unassignedJobs}
             loading={isLoading}
             emptyMessage="No unassigned jobs"
+            onFindContractor={handleFindContractor}
           />
         </Paper>
 
@@ -56,6 +84,14 @@ export function Dashboard() {
           {renderAssignedJobsByDate(assignedJobsByDate, isLoading)}
         </Paper>
       </Stack>
+
+      {/* Recommendation Modal */}
+      <RecommendationModal
+        open={modalOpen}
+        job={selectedJob}
+        onClose={handleCloseModal}
+        onAssign={handleAssignContractor}
+      />
     </Box>
   );
 }

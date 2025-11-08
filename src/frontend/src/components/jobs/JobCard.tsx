@@ -1,22 +1,33 @@
-import { Card, CardContent, Typography, Box, Stack } from '@mui/material';
-import { LocationOn, CalendarToday, AccessTime } from '@mui/icons-material';
+import { Card, CardContent, Typography, Box, Stack, Button, CardActions } from '@mui/material';
+import { LocationOn, CalendarToday, AccessTime, Search } from '@mui/icons-material';
 import type { JobDto } from '../../types/dto';
 import { JobStatusBadge } from './JobStatusBadge';
+import { JobStatus } from '../../types/dto';
 
 interface JobCardProps {
   job: JobDto;
   onClick?: (job: JobDto) => void;
+  onFindContractor?: (job: JobDto) => void;
 }
 
 /**
  * Individual job card component displaying job details
  */
-export function JobCard({ job, onClick }: JobCardProps) {
+export function JobCard({ job, onClick, onFindContractor }: JobCardProps) {
   const handleClick = () => {
     if (onClick) {
       onClick(job);
     }
   };
+
+  const handleFindContractor = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    if (onFindContractor) {
+      onFindContractor(job);
+    }
+  };
+
+  const isUnassigned = job.status === JobStatus.Unassigned;
 
   return (
     <Card
@@ -72,6 +83,22 @@ export function JobCard({ job, onClick }: JobCardProps) {
           )}
         </Stack>
       </CardContent>
+
+      {/* Find Contractor button for unassigned jobs */}
+      {isUnassigned && onFindContractor && (
+        <CardActions sx={{ pt: 0, pb: 2, px: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            fullWidth
+            startIcon={<Search />}
+            onClick={handleFindContractor}
+          >
+            Find Contractor
+          </Button>
+        </CardActions>
+      )}
     </Card>
   );
 }
