@@ -524,8 +524,9 @@ Decomposed scoring logic into focused helper methods for testability and adheren
 ---
 
 ### PR-011: Unit Tests for Scoring Algorithm
-**Status:** New
-**Dependencies:** PR-010
+**Status:** In Progress
+**Agent:** White
+**Dependencies:** PR-010 ✅
 **Priority:** High
 
 **Description:**
@@ -654,9 +655,9 @@ This is the most critical endpoint for the user experience. Performance logging 
 ---
 
 ### PR-015: Domain Event Infrastructure
-**Status:** Planning
-**Agent:** Purple
-**Dependencies:** PR-001
+**Status:** In Progress
+**Agent:** Orange
+**Dependencies:** PR-001 ✅
 **Priority:** High
 
 **Description:**
@@ -891,8 +892,9 @@ Uses Material-UI Table component with pagination. Search is debounced at 300ms. 
 ---
 
 ### PR-021: Contractor Create/Edit Form
-**Status:** New
-**Dependencies:** PR-017, PR-018, PR-012
+**Status:** In Progress
+**Agent:** Blonde
+**Dependencies:** PR-017 ✅, PR-018 ✅, PR-012 ✅
 **Priority:** High
 
 **Description:**
