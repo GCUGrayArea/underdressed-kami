@@ -47,6 +47,39 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddSingleton<DistanceCache>();
 builder.Services.AddScoped<IDistanceCalculator, DistanceCalculator>();
 
+// Register MediatR for CQRS pattern
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(
+        typeof(SmartScheduler.Application.Commands.CreateContractorCommand).Assembly));
+
+// Note: FluentValidation validators are already in Application layer
+// They will be resolved through MediatR pipeline if needed
+
+// Add controllers with JSON options
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
+
+// Add Problem Details for standardized error responses
+builder.Services.AddProblemDetails();
+
+// Add CORS for frontend communication
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(
+                builder.Configuration["CORS:AllowedOrigins"]
+                    ?? "http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -62,6 +95,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable CORS
+app.UseCors();
+
+// Use Problem Details middleware
+app.UseStatusCodePages();
+
+// Map controllers
+app.MapControllers();
 
 var summaries = new[]
 {
