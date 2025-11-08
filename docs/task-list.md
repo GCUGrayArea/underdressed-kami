@@ -655,7 +655,7 @@ This is the most critical endpoint for the user experience. Performance logging 
 ---
 
 ### PR-015: Domain Event Infrastructure
-**Status:** In Progress
+**Status:** Complete
 **Agent:** Orange
 **Dependencies:** PR-001 ✅
 **Priority:** High
@@ -701,14 +701,14 @@ Implement in-memory message bus using MediatR for domain events. Define domain e
 - src/backend/SmartScheduler.Domain/Entities/DomainEventLog.cs (create) - Audit log entity
 - src/backend/SmartScheduler.Domain/Interfaces/IDomainEventLogRepository.cs (create) - Repository interface
 **Files (Refined during Planning):**- src/frontend/src/main.tsx (modify) - Wrap App with Router and ThemeProvider- src/frontend/src/App.tsx (modify) - Replace with RouterProvider- src/frontend/index.html (verify) - Update title and meta- src/frontend/src/theme.ts (create) - MUI theme configuration- src/frontend/src/router.tsx (create) - Route definitions with lazy loading- src/frontend/src/layouts/MainLayout.tsx (create) - Main layout with nav- src/frontend/src/components/Navigation.tsx (create) - Navigation links- src/frontend/src/components/LoadingFallback.tsx (create) - Loading spinner- src/frontend/src/pages/Dashboard.tsx (create) - Dashboard placeholder- src/frontend/src/pages/Contractors.tsx (create) - Contractors placeholder- src/frontend/src/pages/Jobs.tsx (create) - Jobs placeholder- src/frontend/src/pages/NotFound.tsx (create) - 404 page- src/frontend/src/types/index.ts (create) - Common TypeScript types
-- [ ] Domain events published via MediatR when commands complete (ALREADY WORKING in handlers)
-- [ ] Event handlers process events asynchronously
-- [ ] Events include timestamp and relevant entity IDs (ALREADY WORKING)
-- [ ] AuditLogEventHandler logs all events to database for audit trail
-- [ ] Multiple handlers can subscribe to same event
-- [ ] Events do not block command completion (fire and forget)
-- [ ] MediatR properly registered in DI container
-- [ ] Database migration creates DomainEventLog table
+- [x] Domain events published via MediatR when commands complete (ALREADY WORKING in handlers)
+- [x] Event handlers process events asynchronously
+- [x] Events include timestamp and relevant entity IDs (ALREADY WORKING)
+- [x] AuditLogEventHandler logs all events to database for audit trail
+- [x] Multiple handlers can subscribe to same event
+- [x] Events do not block command completion (fire and forget)
+- [x] MediatR properly registered in DI container
+- [x] Database migration creates DomainEventLog table
 
 **Implementation Approach:**
 1. Modify DomainEvent to implement INotification
@@ -892,7 +892,7 @@ Uses Material-UI Table component with pagination. Search is debounced at 300ms. 
 ---
 
 ### PR-021: Contractor Create/Edit Form
-**Status:** In Progress
+**Status:** Complete
 **Agent:** Blonde
 **Dependencies:** PR-017 ✅, PR-018 ✅, PR-012 ✅
 **Priority:** High
@@ -900,24 +900,32 @@ Uses Material-UI Table component with pagination. Search is debounced at 300ms. 
 **Description:**
 Build form for creating new contractors and editing existing ones. Include validation, working hours schedule editor, and success/error handling.
 
-**Files (ESTIMATED - will be refined during Planning):**
-- src/frontend/src/pages/ContractorForm.tsx (create) - Form page
-- src/frontend/src/components/contractors/ContractorFormFields.tsx (create) - Form fields
-- src/frontend/src/components/contractors/WorkingHoursEditor.tsx (create) - Schedule editor
-- src/frontend/src/hooks/useContractorForm.ts (create) - Form state management
-- src/frontend/src/utils/validation.ts (create) - Form validation helpers
+**Files (Implemented):**
+- src/frontend/src/pages/ContractorForm.tsx (created) - Main form page handling both create and edit modes
+- src/frontend/src/components/contractors/ContractorFormFields.tsx (created) - Reusable form fields component with validation
+- src/frontend/src/components/contractors/WorkingHoursEditor.tsx (created) - Weekly schedule editor with day enable/disable
+- src/frontend/src/utils/validation.ts (created) - Comprehensive validation functions matching backend rules
+- src/frontend/src/router.tsx (modified) - Added routes for /contractors/new and /contractors/:id
 
 **Acceptance Criteria:**
-- [ ] Form fields for name, type, rating, base location, contact info
-- [ ] Working hours editor allows setting daily start/end times for each day of week
-- [ ] Client-side validation matches backend rules
-- [ ] Submit creates/updates contractor via API
-- [ ] Success message and redirect to list on save
-- [ ] Error messages displayed for validation failures
-- [ ] Cancel button returns to list without saving
+- [x] Form fields for name, type, rating, base location (address, lat, lon), contact info
+- [x] Working hours editor allows setting daily start/end times for each day of week
+- [x] Client-side validation matches backend rules (name 2-100 chars, rating 0-5, lat/lon ranges, email/phone format)
+- [x] Submit creates/updates contractor via API using existing useContractors hook mutations
+- [x] Success message and redirect to list on save (1.5s delay for user to see message)
+- [x] Error messages displayed for validation failures
+- [x] Cancel button returns to list without saving
+- [x] Handles both create (route: /contractors/new) and edit (route: /contractors/:id) modes
+- [x] Shows loading state during contractor fetch (edit mode) and submission
+- [x] Uses Material-UI components for consistent UI
 
-**Notes:**
-Use React Hook Form for form state management. Working hours editor should support setting multiple time ranges per day in future enhancement.
+**Implementation Notes:**
+- Form state managed with React useState (not React Hook Form as originally planned - simpler for this use case)
+- Integrates with existing useCreateContractor and useUpdateContractor hooks from PR-020
+- Validation functions are reusable and match backend FluentValidation rules
+- Working hours: Simple time inputs for each day with enable/disable checkboxes
+- Job types hardcoded (same as contractor list - will be API-driven in future)
+- Routes properly configured in router.tsx with lazy loading
 
 ---
 
