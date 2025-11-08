@@ -380,7 +380,7 @@ OpenRouteService free tier has 40 requests/minute limit. Caching is critical. Th
 ---
 
 ### PR-009: Unit Tests for Distance Calculator
-**Status:** Planning
+**Status:** In Progress
 **Agent:** Brown
 **Dependencies:** PR-008 ✅
 **Priority:** Medium
@@ -438,8 +438,8 @@ Use xUnit with FluentAssertions for readable assertions. Moq for dependency mock
 ## Block 5: Scoring & Ranking Engine (Depends on: Block 3, Block 4)
 
 ### PR-010: Implement Scoring Algorithm
-**Status:** Planning
-**Agent:** Brown
+**Status:** In Progress
+**Agent:** Blue
 **Dependencies:** PR-006 ✅, PR-008 ✅
 **Priority:** High
 
@@ -860,8 +860,9 @@ Connection should be singleton managed by context. Expose event subscription API
 ## Block 9: Frontend Features - Contractor Management (Depends on: Block 8, Block 6)
 
 ### PR-020: Contractor List Page
-**Status:** New
-**Dependencies:** PR-017, PR-018, PR-012
+**Status:** In Progress
+**Agent:** Pink
+**Dependencies:** PR-017 ✅, PR-018 ✅, PR-012 ✅
 **Priority:** High
 
 **Description:**
