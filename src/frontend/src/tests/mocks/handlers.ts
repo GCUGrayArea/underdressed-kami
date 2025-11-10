@@ -24,7 +24,7 @@ let jobs: JobDto[] = [...mockJobs];
  */
 export const handlers = [
   // GET /api/contractors - List all contractors with optional filtering
-  http.get(`${API_BASE_URL}/contractors`, ({ request }) => {
+  http.get(`${API_BASE_URL}/api/contractors`, ({ request }) => {
     const url = new URL(request.url);
     const jobTypeId = url.searchParams.get('jobTypeId');
     const minRating = url.searchParams.get('minRating');
@@ -72,7 +72,7 @@ export const handlers = [
   }),
 
   // POST /api/contractors - Create new contractor
-  http.post(`${API_BASE_URL}/contractors`, async ({ request }) => {
+  http.post(`${API_BASE_URL}/api/contractors`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     const newContractorItem: ContractorListItemDto = {
@@ -92,7 +92,7 @@ export const handlers = [
   }),
 
   // GET /api/contractors/:id - Get contractor by ID
-  http.get(`${API_BASE_URL}/contractors/:id`, ({ params }) => {
+  http.get(`${API_BASE_URL}/api/contractors/:id`, ({ params }) => {
     const { id } = params;
 
     if (id === mockContractor.id) {
@@ -103,7 +103,7 @@ export const handlers = [
   }),
 
   // PUT /api/contractors/:id - Update contractor
-  http.put(`${API_BASE_URL}/contractors/:id`, async ({ params, request }) => {
+  http.put(`${API_BASE_URL}/api/contractors/:id`, async ({ params, request }) => {
     const { id } = params;
     const body = (await request.json()) as any;
 
@@ -124,7 +124,7 @@ export const handlers = [
   }),
 
   // GET /api/jobs - List all jobs with optional status filtering
-  http.get(`${API_BASE_URL}/jobs`, ({ request }) => {
+  http.get(`${API_BASE_URL}/api/jobs`, ({ request }) => {
     const url = new URL(request.url);
     const status = url.searchParams.get('status');
     const page = parseInt(url.searchParams.get('page') || '1');
@@ -154,7 +154,7 @@ export const handlers = [
   }),
 
   // POST /api/jobs - Create new job
-  http.post(`${API_BASE_URL}/jobs`, async ({ request }) => {
+  http.post(`${API_BASE_URL}/api/jobs`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     const job: JobDto = {
@@ -179,7 +179,7 @@ export const handlers = [
   }),
 
   // GET /api/jobs/:id - Get job by ID
-  http.get(`${API_BASE_URL}/jobs/:id`, ({ params }) => {
+  http.get(`${API_BASE_URL}/api/jobs/:id`, ({ params }) => {
     const { id } = params;
     const job = jobs.find((j) => j.id === id);
 
@@ -191,7 +191,7 @@ export const handlers = [
   }),
 
   // POST /api/jobs/:id/assign - Assign contractor to job
-  http.post(`${API_BASE_URL}/jobs/:id/assign`, async ({ params, request }) => {
+  http.post(`${API_BASE_URL}/api/jobs/:id/assign`, async ({ params, request }) => {
     const { id } = params;
     const body = (await request.json()) as any;
 
@@ -218,7 +218,7 @@ export const handlers = [
   }),
 
   // POST /api/recommendations/contractors - Get contractor recommendations
-  http.post(`${API_BASE_URL}/recommendations/contractors`, async ({ request }) => {
+  http.post(`${API_BASE_URL}/api/recommendations/contractors`, async ({ request }) => {
     const body = (await request.json()) as any;
 
     // Filter by job type if specified

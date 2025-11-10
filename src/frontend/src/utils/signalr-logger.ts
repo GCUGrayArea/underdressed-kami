@@ -1,10 +1,10 @@
-import { ILogger, LogLevel } from '@microsoft/signalr';
+import { LogLevel } from '@microsoft/signalr';
 
 /**
  * Custom logger for SignalR that integrates with browser console
  * and provides detailed debugging information for connection lifecycle
  */
-export class SignalRLogger implements ILogger {
+export class SignalRLogger {
   private prefix = '[SignalR]';
 
   log(logLevel: LogLevel, message: string): void {

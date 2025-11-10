@@ -1,4 +1,5 @@
-import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Grid, Button, SelectChangeEvent } from '@mui/material';
+import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Grid, Button } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ClearIcon from '@mui/icons-material/Clear';
 
