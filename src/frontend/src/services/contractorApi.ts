@@ -20,7 +20,7 @@ export interface ContractorSearchParams {
  * Provides methods for contractor CRUD operations
  */
 class ContractorApiService extends ApiService {
-  private readonly BASE_PATH = '/contractors';
+  private readonly BASE_PATH = '/api/contractors';
 
   /**
    * Get all contractors with pagination and filtering

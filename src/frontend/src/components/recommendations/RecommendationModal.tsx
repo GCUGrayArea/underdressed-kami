@@ -132,13 +132,16 @@ function buildRecommendationRequest(
 ): GetRecommendationsRequest | null {
   if (!job) return null;
 
+  // Extract just the date part (YYYY-MM-DD) from the ISO date string
+  const dateOnly = job.desiredDate.split('T')[0];
+
   return {
     jobTypeId: job.jobTypeId,
-    desiredDate: job.desiredDate,
+    desiredDate: dateOnly,
     desiredTime: job.desiredTime || '09:00:00',
     location: {
-      latitude: job.latitude,
-      longitude: job.longitude,
+      latitude: job.location.latitude,
+      longitude: job.location.longitude,
     },
     estimatedDurationHours: job.estimatedDurationHours,
     topN: 5,

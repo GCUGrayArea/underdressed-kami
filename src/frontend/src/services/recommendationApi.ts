@@ -29,7 +29,7 @@ class RecommendationApiService extends ApiService {
     request: GetRecommendationsRequest
   ): Promise<RankedContractorDto[]> {
     return this.post<RankedContractorDto[]>(
-      '/recommendations/contractors',
+      '/api/recommendations/contractors',
       request
     );
   }

@@ -58,7 +58,7 @@ export function JobCard({ job, onClick, onFindContractor }: JobCardProps) {
           <Stack spacing={1}>
             <InfoRow
               icon={<LocationOn fontSize="small" />}
-              text={`${job.latitude.toFixed(6)}, ${job.longitude.toFixed(6)}`}
+              text={`${job.location.latitude.toFixed(6)}, ${job.location.longitude.toFixed(6)}`}
             />
             <InfoRow
               icon={<CalendarToday fontSize="small" />}

@@ -20,16 +20,13 @@ export interface JobSearchParams {
  * Provides methods for job operations
  */
 class JobApiService extends ApiService {
-  private readonly BASE_PATH = '/jobs';
+  private readonly BASE_PATH = '/api/jobs';
 
   /**
    * Get all jobs with optional filtering
    */
   async getJobs(params?: JobSearchParams): Promise<PagedResult<JobDto>> {
-    const queryParams: Record<string, unknown> = {
-      page: params?.page || 1,
-      pageSize: params?.pageSize || 50,
-    };
+    const queryParams: Record<string, unknown> = {};
 
     // Add optional filters
     if (params?.status !== undefined) {
@@ -48,7 +45,17 @@ class JobApiService extends ApiService {
       queryParams.toDate = params.toDate;
     }
 
-    return this.get<PagedResult<JobDto>>(this.BASE_PATH, queryParams);
+    // Backend currently returns a plain array, not a paged result
+    // We need to wrap it in the expected PagedResult structure
+    const items = await this.get<JobDto[]>(this.BASE_PATH, queryParams);
+
+    return {
+      items,
+      page: params?.page || 1,
+      pageSize: params?.pageSize || 50,
+      totalCount: items.length,
+      totalPages: 1,
+    };
   }
 
   /**

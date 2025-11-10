@@ -79,8 +79,7 @@ export interface JobDto {
   jobTypeName: string;
   customerId: string;
   customerName: string;
-  latitude: number;
-  longitude: number;
+  location: LocationDto;
   desiredDate: string; // ISO 8601 date string
   desiredTime?: string; // TimeOnly format: "HH:mm:ss"
   estimatedDurationHours: number;
