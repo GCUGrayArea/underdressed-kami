@@ -2,8 +2,8 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Build argument for API URL (passed from docker-compose)
-ARG VITE_API_BASE_URL=http://localhost:8080
+# Build argument for API URL (can be passed at build time or use default)
+ARG VITE_API_BASE_URL=https://smartscheduler-backend.onrender.com
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
 # Copy package files
