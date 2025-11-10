@@ -79,7 +79,7 @@ builder.Services.AddSignalR();
 // Add CORS for frontend communication (must allow credentials for SignalR)
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("SmartSchedulerCorsPolicy", policy =>
     {
         if (builder.Environment.IsDevelopment())
         {
@@ -122,16 +122,18 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Enable CORS
-app.UseCors();
+app.UseCors("SmartSchedulerCorsPolicy");
 
 // Use Problem Details middleware
 app.UseStatusCodePages();
 
 // Map controllers
-app.MapControllers();
+app.MapControllers()
+    .RequireCors("SmartSchedulerCorsPolicy");
 
 // Map SignalR hub
-app.MapHub<SmartScheduler.WebApi.Hubs.SchedulingHub>("/hubs/scheduling");
+app.MapHub<SmartScheduler.WebApi.Hubs.SchedulingHub>("/hubs/scheduling")
+    .RequireCors("SmartSchedulerCorsPolicy");
 
 // Health check endpoint for container health monitoring
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
