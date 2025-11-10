@@ -42,6 +42,6 @@ services:
     healthCheckPath: /health
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://smartscheduler-backend.onrender.com
+        value: https://smartscheduler-backend-7mth.onrender.com
       - key: VITE_SIGNALR_HUB_URL
-        value: https://smartscheduler-backend.onrender.com/hubs/scheduling
+        value: https://smartscheduler-backend-7mth.onrender.com/hubs/scheduling
