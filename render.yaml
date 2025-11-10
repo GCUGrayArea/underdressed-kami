@@ -5,14 +5,14 @@ databases:
   - name: smartscheduler-db
     databaseName: smartscheduler
     user: smartscheduler
-    plan: starter
+    plan: free  # Free tier: 90 days free, then $7/month for Basic plan
 
 services:
   # Backend API (.NET 8)
   - type: web
     name: smartscheduler-backend
     runtime: docker
-    plan: starter
+    plan: free  # Free tier with 750 hours/month (note: will spin down after 15min inactivity)
     region: oregon
     dockerfilePath: ./src/backend/Dockerfile
     dockerContext: ./src/backend
@@ -35,7 +35,7 @@ services:
   - type: web
     name: smartscheduler-frontend
     runtime: docker
-    plan: starter
+    plan: free  # Free tier with 750 hours/month
     region: oregon
     dockerfilePath: ./src/frontend/Dockerfile
     dockerContext: ./src/frontend
