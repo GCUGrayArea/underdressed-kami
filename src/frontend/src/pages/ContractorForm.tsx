@@ -33,12 +33,12 @@ import { validateWorkingHours } from '../utils/validation';
 import type { WeeklyScheduleDto } from '../types/dto';
 
 /**
- * Job types (hardcoded for now - will be fetched from API in future)
+ * Job types (hardcoded for now - matches database seed GUIDs)
  */
 const JOB_TYPES: JobTypeOption[] = [
-  { id: '1', name: 'Tile Installer' },
-  { id: '2', name: 'Carpet Installer' },
-  { id: '3', name: 'Hardwood Specialist' },
+  { id: '10000000-0000-0000-0000-000000000001', name: 'Tile Installer' },
+  { id: '10000000-0000-0000-0000-000000000002', name: 'Carpet Installer' },
+  { id: '10000000-0000-0000-0000-000000000003', name: 'Hardwood Specialist' },
 ];
 
 /**
