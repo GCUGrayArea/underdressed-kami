@@ -2,9 +2,11 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Build argument for API URL (can be passed at build time or use default)
+# Build arguments for API URLs (can be passed at build time or use defaults)
 ARG VITE_API_BASE_URL=https://smartscheduler-backend.onrender.com
+ARG VITE_SIGNALR_HUB_URL=https://smartscheduler-backend.onrender.com/hubs/scheduling
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_SIGNALR_HUB_URL=${VITE_SIGNALR_HUB_URL}
 
 # Copy package files
 COPY package.json package-lock.json ./

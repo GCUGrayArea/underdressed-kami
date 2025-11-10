@@ -98,7 +98,8 @@ builder.Services.AddCors(options =>
             policy.WithOrigins(allowedOrigins.Split(','))
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowCredentials()
+                .WithExposedHeaders("x-correlation-id"); // Expose custom headers
         }
     });
 });
