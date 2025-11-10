@@ -97,10 +97,10 @@ builder.Services.AddCors(options =>
                 ?? "https://smartscheduler-frontend-ltq9.onrender.com"; // Hardcoded fallback for Render deployment
 
             policy.WithOrigins(allowedOrigins.Split(','))
-                .WithHeaders("content-type", "x-correlation-id") // Explicitly allow custom request headers
+                .WithHeaders("content-type", "X-Correlation-ID") // Explicitly allow custom request headers (case-sensitive!)
                 .AllowAnyMethod()
                 .AllowCredentials()
-                .WithExposedHeaders("x-correlation-id"); // Expose custom response headers
+                .WithExposedHeaders("X-Correlation-ID"); // Expose custom response headers
         }
     });
 });
