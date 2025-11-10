@@ -96,10 +96,10 @@ builder.Services.AddCors(options =>
                 ?? throw new InvalidOperationException("CORS:AllowedOrigins not configured for production");
 
             policy.WithOrigins(allowedOrigins.Split(','))
-                .AllowAnyHeader()
+                .WithHeaders("content-type", "x-correlation-id") // Explicitly allow custom request headers
                 .AllowAnyMethod()
                 .AllowCredentials()
-                .WithExposedHeaders("x-correlation-id"); // Expose custom headers
+                .WithExposedHeaders("x-correlation-id"); // Expose custom response headers
         }
     });
 });
