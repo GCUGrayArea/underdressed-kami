@@ -100,7 +100,8 @@ public class JobRepository : IJobRepository
         DateTime date,
         CancellationToken cancellationToken = default)
     {
-        var targetDate = date.Date;
+        // Ensure targetDate is UTC to satisfy PostgreSQL timestamp with time zone
+        var targetDate = DateTime.SpecifyKind(date.Date, DateTimeKind.Utc);
 
         return await _context.Jobs
             .Where(j => j.AssignedContractorId == contractorId)

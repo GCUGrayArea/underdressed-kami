@@ -66,7 +66,7 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.WriteIndented = true;
     });
 
@@ -81,12 +81,25 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins(
-                builder.Configuration["CORS:AllowedOrigins"]
-                    ?? "http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials(); // Required for SignalR
+        if (builder.Environment.IsDevelopment())
+        {
+            // In development, allow any localhost origin
+            policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials(); // Required for SignalR
+        }
+        else
+        {
+            // In production, use configured origins
+            var allowedOrigins = builder.Configuration["CORS:AllowedOrigins"]
+                ?? throw new InvalidOperationException("CORS:AllowedOrigins not configured for production");
+
+            policy.WithOrigins(allowedOrigins.Split(','))
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
     });
 });
 
