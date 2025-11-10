@@ -97,7 +97,7 @@ builder.Services.AddCors(options =>
                 ?? "https://smartscheduler-frontend-ltq9.onrender.com"; // Hardcoded fallback for Render deployment
 
             policy.WithOrigins(allowedOrigins.Split(','))
-                .WithHeaders("content-type", "X-Correlation-ID") // Explicitly allow custom request headers (case-sensitive!)
+                .AllowAnyHeader() // Allow all headers (SignalR needs X-Requested-With, X-SignalR-User-Agent, etc.)
                 .AllowAnyMethod()
                 .AllowCredentials()
                 .WithExposedHeaders("X-Correlation-ID"); // Expose custom response headers
