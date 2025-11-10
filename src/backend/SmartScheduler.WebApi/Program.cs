@@ -23,17 +23,53 @@ if (string.IsNullOrEmpty(connectionString))
         "or provide a Render PostgreSQL database.");
 }
 
+Console.WriteLine($"STARLING: Connection string source detected, length: {connectionString.Length}");
+
 // Render provides DATABASE_URL in format: postgres://user:pass@host:port/db
-// Convert to Npgsql format if needed
-if (connectionString.StartsWith("postgres://") && !connectionString.StartsWith("postgresql://"))
+// Convert to Npgsql connection string format: Host=...;Database=...;Username=...;Password=...
+// Only convert if it's in URI format, otherwise assume it's already in Npgsql format
+if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
 {
-    Console.WriteLine("STARLING: Converting postgres:// to postgresql:// format");
-    connectionString = connectionString.Replace("postgres://", "postgresql://");
+    Console.WriteLine("STARLING: Detected URI format, converting to Npgsql connection string format");
+
+    try
+    {
+        var uri = new Uri(connectionString);
+        var userInfo = uri.UserInfo.Split(':');
+        var username = userInfo[0];
+        var password = userInfo.Length > 1 ? userInfo[1] : "";
+        var host = uri.Host;
+        var port = uri.Port > 0 ? uri.Port : 5432;
+        var database = uri.AbsolutePath.TrimStart('/');
+
+        connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+        Console.WriteLine($"STARLING: Converted to Npgsql format (Host={host}, Port={port}, Database={database})");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"STARLING: ERROR converting URI to connection string: {ex.Message}");
+        throw;
+    }
+}
+else if (connectionString.Contains("Host="))
+{
+    Console.WriteLine("STARLING: Detected Npgsql format, using as-is");
+}
+else
+{
+    Console.WriteLine("STARLING: WARNING - Unknown connection string format!");
 }
 
-// Log connection info (mask password)
-var maskedConnection = System.Text.RegularExpressions.Regex.Replace(
-    connectionString,
+// Log connection info (mask password for both formats)
+var maskedConnection = connectionString;
+// Mask password in Npgsql format: Password=xxx;
+maskedConnection = System.Text.RegularExpressions.Regex.Replace(
+    maskedConnection,
+    @"(Password=)([^;]+)(;?)",
+    "$1****$3");
+// Mask password in URI format: ://user:pass@
+maskedConnection = System.Text.RegularExpressions.Regex.Replace(
+    maskedConnection,
     @"(:\/\/[^:]+:)([^@]+)(@)",
     "$1****$3");
 Console.WriteLine($"STARLING: Using connection string: {maskedConnection}");
