@@ -91,9 +91,10 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            // In production, use configured origins
+            // In production, use configured origins (check both formats)
             var allowedOrigins = builder.Configuration["CORS:AllowedOrigins"]
-                ?? throw new InvalidOperationException("CORS:AllowedOrigins not configured for production");
+                ?? Environment.GetEnvironmentVariable("CORS__AllowedOrigins")
+                ?? throw new InvalidOperationException("CORS:AllowedOrigins or CORS__AllowedOrigins not configured for production");
 
             policy.WithOrigins(allowedOrigins.Split(','))
                 .WithHeaders("content-type", "x-correlation-id") // Explicitly allow custom request headers
