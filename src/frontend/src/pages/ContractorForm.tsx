@@ -169,6 +169,15 @@ export function ContractorForm() {
     setSubmitError(null);
 
     try {
+      // Prepare working hours for API
+      const weeklySchedule = workingHours
+        .filter(wh => wh.isEnabled)
+        .map(wh => ({
+          dayOfWeek: wh.dayOfWeek,
+          startTime: wh.startTime,
+          endTime: wh.endTime,
+        }));
+
       // Prepare data for API
       const contractorData = {
         name: formData.name,
@@ -180,6 +189,7 @@ export function ContractorForm() {
         },
         phone: formData.phone || undefined,
         email: formData.email || undefined,
+        weeklySchedule, // Include working hours in both create and update
         ...(isEditMode ? {} : { rating: formData.rating }), // Rating only for create
       };
 
