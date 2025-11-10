@@ -30,12 +30,12 @@ import {
 } from '../utils/validation';
 
 /**
- * Job types (hardcoded for now - matches contractor form pattern)
+ * Job types (hardcoded for now - matches database seed GUIDs)
  */
 const JOB_TYPES: JobTypeOption[] = [
-  { id: '1', name: 'Tile Installer' },
-  { id: '2', name: 'Carpet Installer' },
-  { id: '3', name: 'Hardwood Specialist' },
+  { id: '10000000-0000-0000-0000-000000000001', name: 'Tile Installer' },
+  { id: '10000000-0000-0000-0000-000000000002', name: 'Carpet Installer' },
+  { id: '10000000-0000-0000-0000-000000000003', name: 'Hardwood Specialist' },
 ];
 
 /**
