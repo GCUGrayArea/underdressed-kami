@@ -8,20 +8,35 @@ using SmartScheduler.Infrastructure.Persistence.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add database context with connection string fallback logic
+Console.WriteLine("STARLING: Attempting to load database connection string...");
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? builder.Configuration["DATABASE_URL"]
-    ?? Environment.GetEnvironmentVariable("DATABASE_URL")
-    ?? throw new InvalidOperationException(
+    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    Console.WriteLine("STARLING: ERROR - No database connection string found!");
+    throw new InvalidOperationException(
         "Database connection string not found. " +
         "Set ConnectionStrings:DefaultConnection, DATABASE_URL environment variable, " +
         "or provide a Render PostgreSQL database.");
+}
 
 // Render provides DATABASE_URL in format: postgres://user:pass@host:port/db
 // Convert to Npgsql format if needed
 if (connectionString.StartsWith("postgres://") && !connectionString.StartsWith("postgresql://"))
 {
+    Console.WriteLine("STARLING: Converting postgres:// to postgresql:// format");
     connectionString = connectionString.Replace("postgres://", "postgresql://");
 }
+
+// Log connection info (mask password)
+var maskedConnection = System.Text.RegularExpressions.Regex.Replace(
+    connectionString,
+    @"(:\/\/[^:]+:)([^@]+)(@)",
+    "$1****$3");
+Console.WriteLine($"STARLING: Using connection string: {maskedConnection}");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));

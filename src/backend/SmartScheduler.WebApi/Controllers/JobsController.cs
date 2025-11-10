@@ -74,15 +74,26 @@ public class JobsController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<JobResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetJobs([FromQuery] JobStatus? status = null)
     {
-        _logger.LogInformation(
-            "Retrieving jobs with status filter: {Status}",
-            status?.ToString() ?? "None");
+        try
+        {
+            _logger.LogInformation(
+                "STARLING: GET /api/jobs - Retrieving jobs with status filter: {Status}",
+                status?.ToString() ?? "None");
 
-        var query = new GetJobsByStatusQuery(status);
-        var jobDtos = await _mediator.Send(query);
+            var query = new GetJobsByStatusQuery(status);
 
-        var responses = jobDtos.Select(dto => new JobResponse(dto));
-        return Ok(responses);
+            _logger.LogInformation("STARLING: Sending query to MediatR handler");
+            var jobDtos = await _mediator.Send(query);
+
+            _logger.LogInformation("STARLING: Successfully retrieved {Count} jobs", jobDtos.Count());
+            var responses = jobDtos.Select(dto => new JobResponse(dto));
+            return Ok(responses);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "STARLING: ERROR in GET /api/jobs - {Message}", ex.Message);
+            throw;
+        }
     }
 
     /// <summary>
