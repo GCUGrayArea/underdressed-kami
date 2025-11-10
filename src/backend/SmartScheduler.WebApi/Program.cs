@@ -91,10 +91,10 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            // In production, use configured origins (check both formats)
+            // In production, use configured origins (check both formats, with hardcoded fallback)
             var allowedOrigins = builder.Configuration["CORS:AllowedOrigins"]
                 ?? Environment.GetEnvironmentVariable("CORS__AllowedOrigins")
-                ?? throw new InvalidOperationException("CORS:AllowedOrigins or CORS__AllowedOrigins not configured for production");
+                ?? "https://smartscheduler-frontend-ltq9.onrender.com"; // Hardcoded fallback for Render deployment
 
             policy.WithOrigins(allowedOrigins.Split(','))
                 .WithHeaders("content-type", "x-correlation-id") // Explicitly allow custom request headers
