@@ -55,6 +55,18 @@ public class CreateContractorCommandHandler
             // Save to repository
             await _contractorRepository.AddAsync(contractor, cancellationToken);
 
+            // Add weekly schedules
+            foreach (var scheduleDto in request.WeeklySchedule)
+            {
+                var schedule = new WeeklySchedule(
+                    contractor.Id,
+                    scheduleDto.DayOfWeek,
+                    scheduleDto.StartTime,
+                    scheduleDto.EndTime);
+
+                await _contractorRepository.AddWeeklyScheduleAsync(schedule, cancellationToken);
+            }
+
             // Publish domain event
             var domainEvent = new ContractorCreatedEvent(
                 contractor.Id,

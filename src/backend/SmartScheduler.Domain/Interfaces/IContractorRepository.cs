@@ -20,5 +20,6 @@ public interface IContractorRepository
     Task<(IEnumerable<Contractor> contractors, int totalCount)> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default);
     Task<(IEnumerable<Contractor> contractors, int totalCount)> SearchAsync(Guid? jobTypeId, decimal? minRating, decimal? maxRating, bool? isActive, int page, int pageSize, CancellationToken cancellationToken = default);
     Task<IEnumerable<WeeklySchedule>> GetSchedulesByContractorIdAsync(Guid contractorId, CancellationToken cancellationToken = default);
+    Task AddWeeklyScheduleAsync(WeeklySchedule schedule, CancellationToken cancellationToken = default);
     Task<JobType?> GetJobTypeByIdAsync(Guid jobTypeId, CancellationToken cancellationToken = default);
 }

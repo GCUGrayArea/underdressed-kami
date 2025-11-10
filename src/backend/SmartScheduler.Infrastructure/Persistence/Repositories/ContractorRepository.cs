@@ -205,6 +205,17 @@ public class ContractorRepository : IContractorRepository
     }
 
     /// <summary>
+    /// Adds a weekly schedule entry for a contractor.
+    /// </summary>
+    public async Task AddWeeklyScheduleAsync(
+        WeeklySchedule schedule,
+        CancellationToken cancellationToken = default)
+    {
+        await _context.WeeklySchedules.AddAsync(schedule, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// Retrieves a job type by its unique identifier.
     /// </summary>
     public async Task<JobType?> GetJobTypeByIdAsync(
