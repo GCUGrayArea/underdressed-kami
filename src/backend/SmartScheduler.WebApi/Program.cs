@@ -7,9 +7,24 @@ using SmartScheduler.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add database context
+// Add database context with connection string fallback logic
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? builder.Configuration["DATABASE_URL"]
+    ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? throw new InvalidOperationException(
+        "Database connection string not found. " +
+        "Set ConnectionStrings:DefaultConnection, DATABASE_URL environment variable, " +
+        "or provide a Render PostgreSQL database.");
+
+// Render provides DATABASE_URL in format: postgres://user:pass@host:port/db
+// Convert to Npgsql format if needed
+if (connectionString.StartsWith("postgres://") && !connectionString.StartsWith("postgresql://"))
+{
+    connectionString = connectionString.Replace("postgres://", "postgresql://");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // Register repositories
 builder.Services.AddScoped<IContractorRepository, ContractorRepository>();
@@ -29,8 +44,14 @@ builder.Services.AddMemoryCache(options =>
 });
 
 // Register distance calculation services
-var apiKey = builder.Configuration["OPENROUTESERVICE_API_KEY"]
-    ?? throw new InvalidOperationException("OPENROUTESERVICE_API_KEY not configured");
+var apiKey = builder.Configuration["OPENROUTESERVICE_API_KEY"];
+if (string.IsNullOrEmpty(apiKey))
+{
+    // Log warning but don't fail - allow app to start for demo purposes
+    // Distance calculations will fall back to straight-line distance
+    Console.WriteLine("WARNING: OPENROUTESERVICE_API_KEY not configured. Distance calculations will use fallback.");
+    apiKey = "dummy-key-not-configured"; // Placeholder to allow startup
+}
 
 builder.Services.AddHttpClient<OpenRouteServiceClient>()
     .ConfigureHttpClient(client =>
@@ -121,8 +142,24 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Enable CORS
+// Enable CORS (must be before other middleware to ensure headers on all responses)
 app.UseCors("SmartSchedulerCorsPolicy");
+
+// Add exception handler to ensure CORS headers on error responses
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new
+        {
+            title = "Internal Server Error",
+            status = 500,
+            detail = "An unexpected error occurred. Please try again later."
+        });
+    });
+});
 
 // Use Problem Details middleware
 app.UseStatusCodePages();
