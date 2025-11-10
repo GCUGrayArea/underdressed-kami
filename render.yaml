@@ -1,0 +1,43 @@
+# Render Blueprint for SmartScheduler
+# Deploy: Push to GitHub, then go to Render Dashboard > "New" > "Blueprint" > Connect repo
+
+databases:
+  - name: smartscheduler-db
+    databaseName: smartscheduler
+    user: smartscheduler
+    plan: starter
+
+services:
+  # Backend API (.NET 8)
+  - type: web
+    name: smartscheduler-backend
+    runtime: docker
+    plan: starter
+    region: oregon
+    dockerfilePath: ./src/backend/Dockerfile
+    dockerContext: ./src/backend
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: smartscheduler-db
+          property: connectionString
+      - key: OPENROUTESERVICE_API_KEY
+        sync: false  # You'll add this in Render dashboard after deployment
+      - key: CORS__AllowedOrigins
+        value: https://smartscheduler-frontend.onrender.com
+
+  # Frontend (React + Nginx)
+  - type: web
+    name: smartscheduler-frontend
+    runtime: docker
+    plan: starter
+    region: oregon
+    dockerfilePath: ./src/frontend/Dockerfile
+    dockerContext: ./src/frontend
+    dockerCommand: docker build --build-arg VITE_API_BASE_URL=https://smartscheduler-backend.onrender.com .
+    healthCheckPath: /health
